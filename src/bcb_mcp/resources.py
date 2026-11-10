@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-from typing import Any
 
 from fastmcp import FastMCP
 
@@ -90,12 +89,3 @@ def register_resources_and_prompts(mcp: FastMCP, service: SeriesService) -> None
             "4. Report units explicitly and note that daily and monthly series are "
             "not directly comparable without aggregation.\n"
         )
-
-
-def dictionary_summary(service: SeriesService) -> dict[str, Any]:
-    """Small helper used by tests and the CLI banner."""
-    return {
-        "series": len(service.dictionary),
-        "categories": len(service.dictionary.categories),
-        "version": service.dictionary.version,
-    }

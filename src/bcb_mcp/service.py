@@ -16,7 +16,7 @@ from .config import (
     MAX_ROWS_LIMIT,
     MAX_SEARCH_RESULTS,
 )
-from .dictionary import SeriesDictionary, get_dictionary, normalize
+from .dictionary import SeriesDictionary, get_dictionary
 
 logger = logging.getLogger("bcb_mcp.service")
 
@@ -542,7 +542,3 @@ def parse_date(value: str | dt.date | None, *, default: dt.date | None = None) -
         except ValueError:
             continue
     raise ValueError(f"Unrecognised date {value!r}; use YYYY-MM-DD or DD/MM/YYYY.")
-
-
-def normalize_query_text(text: str) -> str:
-    return normalize(text)

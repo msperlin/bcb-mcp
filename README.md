@@ -206,6 +206,21 @@ ruff check . && ruff format --check .
 
 Tests mock HTTP with `respx`; no network access is required.
 
+## Releasing to PyPI
+
+The package is ready to publish. Two options:
+
+1. **Trusted publishing (recommended, no token).** Create the project on PyPI as a
+   *pending publisher* for `bcb-mcp` with workflow `publish.yml` and environment
+   `pypi`, then publish a GitHub release. The workflow builds the sdist/wheel and
+   uploads them with OIDC.
+2. **Manual.** `uv build && uv publish` (needs `UV_PUBLISH_TOKEN` or a
+   `~/.pypirc`).
+
+Before tagging, bump the version in `pyproject.toml` and `src/bcb_mcp/config.py`
+and add a `CHANGELOG.md` entry.
+
+
 ## Data source and disclaimer
 
 Data comes from the public BCB SGS endpoints (`api.bcb.gov.br` and `www3.bcb.gov.br`). Series may be revised or discontinued by the Central Bank. This project is not affiliated with the Banco Central do Brasil. Use at your own risk.
