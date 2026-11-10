@@ -22,22 +22,29 @@ jobs:
         with:
           enable-cache: true
 
-      - name: Set up Python ${{ matrix.python-version }}
-        run: uv python install ${{ matrix.python-version }}
+      - name: Create the virtual environment
+        run: uv venv --python ${{ matrix.python-version }}
 
       - name: Install the package
-        run: uv pip install --system -e ".[dev]"
+        run: uv pip install -e ".[dev]"
 
       - name: Lint
         run: |
-          ruff check .
-          ruff format --check .
+          uv run ruff check .
+          uv run ruff format --check .
 
       - name: Test
-        run: pytest -q
+        run: uv run pytest -q
 
-      - name: Validate the dictionary JSON
-        run: python -c "import json; d=json.load(open('src/bcb_mcp/data/series_dictionary.json')); assert len(d['series']) > 100"
+      - name: Validate the dictionary
+        run: |
+          uv run python -c "
+          import json
+          d = json.load(open('src/bcb_mcp/data/series_dictionary.json'))
+          assert len(d['series']) > 100
+          assert all(s['category'] in d['categories'] for s in d['series'])
+          print('dictionary ok:', len(d['series']), 'series')
+          "
 
   build:
     runs-on: ubuntu-latest
@@ -53,11 +60,12 @@ jobs:
       - name: Check the wheel ships the dictionary
         run: |
           python - <<'PY'
-          import zipfile, glob
+          import glob, zipfile
           wheel = glob.glob("dist/*.whl")[0]
           names = zipfile.ZipFile(wheel).namelist()
           assert any(n.endswith("series_dictionary.json") for n in names), names
-          print(wheel, "contains the dictionary")
+          assert any(n.endswith("bcb_mcp/py.typed") for n in names), names
+          print(wheel, "contains the dictionary and py.typed")
           PY
 
       - uses: actions/upload-artifact@v4

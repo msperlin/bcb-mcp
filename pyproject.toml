@@ -66,6 +66,9 @@ bcb-mcp = "bcb_mcp.server:cli_main"
 [tool.hatch.build.targets.wheel]
 packages = ["src/bcb_mcp"]
 
+[tool.hatch.build]
+artifacts = ["src/bcb_mcp/py.typed"]
+
 [tool.hatch.build.targets.sdist]
 include = [
     "src/bcb_mcp",
