@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import datetime as dt
+import json
 
 import pytest
 
+from bcb_mcp.config import DEFAULT_MAX_ROWS
 from bcb_mcp.service import SeriesService, parse_date
 
 
@@ -16,9 +18,12 @@ async def test_get_series_long_format(service: SeriesService) -> None:
     assert out["failures"] == []
     first = out["rows"][0]
     assert first["series_id"] == 11
-    assert first["series_name"] == "Interest rate - Selic"
-    assert first["unit"] == "% p.d."
     assert first["ref_date"] == "2020-01-01"
+    # Per-row payload is minimal; metadata lives once in `series`.
+    assert set(first) == {"ref_date", "value", "series_id"}
+    meta = out["series"][0]
+    assert meta["series_name"] == "Interest rate - Selic"
+    assert meta["unit"] == "% p.d."
 
 
 async def test_get_series_wide_format(service: SeriesService) -> None:
@@ -163,3 +168,71 @@ async def test_failed_series_does_not_break_others(service: SeriesService) -> No
     out = await service.get_series([11, 999999], first_date="2020-01-01", last_date="2020-12-31")
     assert out["row_count"] == 12
     assert len(out["failures"]) == 1
+
+
+def test_default_row_budget_is_llm_friendly() -> None:
+    assert DEFAULT_MAX_ROWS <= 1000
+
+
+async def test_future_last_date_is_clamped_to_today(service: SeriesService) -> None:
+    today = dt.date.today()
+    future = today + dt.timedelta(days=90)
+    out = await service.get_series([11], first_date="2020-01-01", last_date=future.isoformat())
+    assert out["last_date"] == today.isoformat()
+    coverage = service.cache.read_meta(11)["coverage"]
+    assert coverage[-1][1] == today.isoformat()
+
+
+async def test_tail_refresh_picks_up_new_observations(service: SeriesService, fake_client) -> None:
+    today = dt.date.today()
+    start = today - dt.timedelta(days=40)
+    fake_client.data[11] = [
+        (start, 1.0),
+        (today - dt.timedelta(days=1), 2.0),
+    ]
+    first = await service.get_series(
+        [11], first_date=start.isoformat(), last_date=today.isoformat()
+    )
+    assert first["row_count"] == 2
+
+    # A new observation appears and the cached copy is now considered old.
+    fake_client.data[11].append((today, 3.0))
+    meta = service.cache.read_meta(11)
+    meta["updated_at"] = "2020-01-01T00:00:00+00:00"
+    service.cache.meta_path(11).write_text(json.dumps(meta), encoding="utf-8")
+
+    second = await service.get_series(
+        [11], first_date=start.isoformat(), last_date=today.isoformat()
+    )
+    assert second["row_count"] == 3
+    assert second["series"][0]["last_value"] == 3.0
+    assert second["series"][0]["from_cache"] is False
+
+
+async def test_wide_format_disambiguates_duplicate_names(service: SeriesService) -> None:
+    out = await service.get_series(
+        [11, 433],
+        first_date="2020-01-01",
+        last_date="2020-12-31",
+        format_data="wide",
+        series_names=["Same", "Same"],
+    )
+    assert out["columns"] == ["ref_date", "Same", "Same [433]"]
+    assert out["rows"][0]["Same"] is not None
+    assert out["warnings"]
+
+
+async def test_unexpected_errors_are_not_swallowed(service: SeriesService) -> None:
+    class BrokenClient:
+        async def fetch_series(self, *_args, **_kwargs):
+            raise RuntimeError("boom")
+
+        async def fetch_series_range(self, *_args, **_kwargs):
+            raise RuntimeError("boom")
+
+        async def close(self) -> None:
+            pass
+
+    broken = SeriesService(cache=service.cache, client=BrokenClient())
+    with pytest.raises(RuntimeError, match="boom"):
+        await broken.get_series([11], first_date="2020-01-01", last_date="2020-12-31")

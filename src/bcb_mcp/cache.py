@@ -14,14 +14,16 @@ improves on) the ``memoise``-based cache of the R package GetBCBData.
 
 from __future__ import annotations
 
+import contextlib
 import datetime as dt
 import hashlib
 import json
 import logging
 import os
+import re
 import tempfile
 import threading
-from collections.abc import Iterable
+from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -51,31 +53,60 @@ def _empty_select() -> str:
     return f"SELECT {cols} LIMIT 0"
 
 
-_FORBIDDEN_SQL = (
-    "insert",
-    "update",
-    "delete",
-    "drop",
-    "create",
-    "alter",
-    "attach",
-    "detach",
-    "copy",
-    "export",
-    "import",
-    "install",
-    "load",
-    "pragma",
-    "set ",
-    "call",
-    "read_csv",
-    "read_json",
-    "read_parquet_metadata",
-    "httpfs",
-    "shell",
+_FORBIDDEN_SQL_RE = re.compile(
+    r"\b("
+    r"insert|update|delete|drop|create|alter|attach|detach|copy|export|import"
+    r"|install|load|pragma|set|call|reset|vacuum|checkpoint"
+    r"|read_text|read_blob|read_csv|read_csv_auto|read_json|read_json_auto"
+    r"|read_parquet|read_parquet_metadata|parquet_scan|sniff_csv|glob"
+    r"|sqlite_scan|sqlite_attach|postgres_scan|mysql_scan|httpfs|shell|getenv"
+    r")\b",
+    re.IGNORECASE,
 )
 
 _ALLOWED_SQL_PREFIXES = ("select", "with", "describe", "show", "summarize", "explain")
+
+
+def _strip_sql_literals(statement: str) -> str:
+    """Remove string literals and comments so keyword checks see only SQL syntax.
+
+    This keeps harmless aliases such as ``SELECT 1 AS "set time"`` working while
+    still catching a real ``SET``/``COPY`` keyword.
+    """
+    out: list[str] = []
+    index = 0
+    length = len(statement)
+    quote: str | None = None
+    while index < length:
+        char = statement[index]
+        if quote:
+            if char == quote:
+                if index + 1 < length and statement[index + 1] == quote:
+                    index += 2
+                    continue
+                quote = None
+            index += 1
+            continue
+        if char in ("'", '"'):
+            quote = char
+            out.append(" ")
+            index += 1
+            continue
+        if statement.startswith("--", index):
+            newline = statement.find("\n", index)
+            if newline == -1:
+                break
+            index = newline + 1
+            out.append(" ")
+            continue
+        if statement.startswith("/*", index):
+            end = statement.find("*/", index + 2)
+            index = length if end == -1 else end + 2
+            out.append(" ")
+            continue
+        out.append(char)
+        index += 1
+    return "".join(out)
 
 
 @dataclass
@@ -183,68 +214,72 @@ class ParquetCache:
     ) -> int:
         """Merge new observations into the consolidated series parquet."""
         new_rows = [row for row in rows if row.get("ref_date")]
-        with self._write_lock:
+        with self._write_lock, _cache_write_lock(self.root):
             target = self.series_path(series_id)
-            tmp_parquet = target.with_suffix(".parquet.tmp")
-            if tmp_parquet.exists():
-                tmp_parquet.unlink()
+            tmp_parquet: Path | None = None
+            try:
+                if new_rows:
+                    tmp_parquet = _temp_path(target)
+                    with _ndjson_temp(new_rows) as ndjson_path:
+                        existing = (
+                            f"(SELECT * FROM read_parquet('{_esc(str(target))}'))"
+                            if target.exists()
+                            else f"({_empty_select()})"
+                        )
+                        sql = f"""
+                            COPY (
+                                WITH merged AS (
+                                    {existing}
+                                    UNION ALL
+                                    (SELECT ref_date::DATE, value::DOUBLE, series_id::INTEGER,
+                                            series_name::VARCHAR, unit::VARCHAR,
+                                            frequency::VARCHAR, source::VARCHAR,
+                                            fetched_at::VARCHAR
+                                     FROM read_json_auto('{_esc(str(ndjson_path))}'))
+                                ),
+                                ranked AS (
+                                    SELECT *, row_number() OVER (
+                                        PARTITION BY ref_date ORDER BY fetched_at DESC
+                                    ) AS rn
+                                    FROM merged
+                                )
+                                SELECT ref_date, value, series_id, series_name, unit,
+                                       frequency, source, fetched_at
+                                FROM ranked WHERE rn = 1 ORDER BY ref_date
+                            ) TO '{_esc(str(tmp_parquet))}' (FORMAT PARQUET)
+                        """
+                        _run(sql)
+                        os.replace(tmp_parquet, target)
 
-            if new_rows:
-                with _ndjson_temp(new_rows) as ndjson_path:
-                    existing = (
-                        f"(SELECT * FROM read_parquet('{_esc(str(target))}'))"
-                        if target.exists()
-                        else f"({_empty_select()})"
-                    )
-                    sql = f"""
-                        COPY (
-                            WITH merged AS (
-                                {existing}
-                                UNION ALL
-                                (SELECT ref_date::DATE, value::DOUBLE, series_id::INTEGER,
-                                        series_name::VARCHAR, unit::VARCHAR,
-                                        frequency::VARCHAR, source::VARCHAR,
-                                        fetched_at::VARCHAR
-                                 FROM read_json_auto('{_esc(str(ndjson_path))}'))
-                            ),
-                            ranked AS (
-                                SELECT *, row_number() OVER (
-                                    PARTITION BY ref_date ORDER BY fetched_at DESC
-                                ) AS rn
-                                FROM merged
-                            )
-                            SELECT ref_date, value, series_id, series_name, unit,
-                                   frequency, source, fetched_at
-                            FROM ranked WHERE rn = 1 ORDER BY ref_date
-                        ) TO '{_esc(str(tmp_parquet))}' (FORMAT PARQUET)
-                    """
-                    _run(sql)
-                    os.replace(tmp_parquet, target)
-
-            total_rows = self._count_rows(target) if target.exists() else 0
-            meta = self.read_meta(series_id) or {}
-            ranges = list(meta.get("coverage", []))
-            ranges = [
-                [start.isoformat(), end.isoformat()]
-                for start, end in merge_ranges([*_as_ranges(ranges), *(covered or [])])
-            ]
-            first_dt, last_dt = self._bounds(target) if target.exists() else (None, None)
-            meta.update(
-                {
-                    "series_id": series_id,
-                    "series_name": series_name,
-                    "unit": unit or meta.get("unit", ""),
-                    "frequency": frequency or meta.get("frequency", ""),
-                    "source": source or meta.get("source", ""),
-                    "rows": total_rows,
-                    "coverage": ranges,
-                    "first_date": first_dt.isoformat() if first_dt else None,
-                    "last_date": last_dt.isoformat() if last_dt else None,
-                    "updated_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
-                }
-            )
-            _atomic_json(self.meta_path(series_id), meta)
-            return total_rows
+                total_rows = self._count_rows(target) if target.exists() else 0
+                meta = self.read_meta(series_id) or {}
+                ranges = list(meta.get("coverage", []))
+                ranges = [
+                    [start.isoformat(), end.isoformat()]
+                    for start, end in merge_ranges([*_as_ranges(ranges), *(covered or [])])
+                ]
+                first_dt, last_dt = self._bounds(target) if target.exists() else (None, None)
+                meta.update(
+                    {
+                        "series_id": series_id,
+                        "series_name": series_name,
+                        "unit": unit or meta.get("unit", ""),
+                        "frequency": frequency or meta.get("frequency", ""),
+                        "source": source or meta.get("source", ""),
+                        "rows": total_rows,
+                        "coverage": ranges,
+                        "first_date": first_dt.isoformat() if first_dt else None,
+                        "last_date": last_dt.isoformat() if last_dt else None,
+                        "updated_at": dt.datetime.now(dt.timezone.utc).isoformat(
+                            timespec="seconds"
+                        ),
+                    }
+                )
+                _atomic_json(self.meta_path(series_id), meta)
+                return total_rows
+            finally:
+                if tmp_parquet is not None:
+                    tmp_parquet.unlink(missing_ok=True)
 
     def save_query(
         self,
@@ -258,19 +293,23 @@ class ParquetCache:
         if not materialised:
             return None
         target = self.query_path(series_id, first, last)
-        tmp = target.with_suffix(".parquet.tmp")
-        with _ndjson_temp(materialised) as ndjson_path:
-            sql = f"""
-                COPY (
-                    SELECT ref_date::DATE, value::DOUBLE, series_id::INTEGER,
-                           series_name::VARCHAR, unit::VARCHAR, frequency::VARCHAR,
-                           source::VARCHAR, fetched_at::VARCHAR
-                    FROM read_json_auto('{_esc(str(ndjson_path))}')
-                    ORDER BY ref_date
-                ) TO '{_esc(str(tmp))}' (FORMAT PARQUET)
-            """
-            _run(sql)
-        os.replace(tmp, target)
+        with _cache_write_lock(self.root):
+            tmp = _temp_path(target)
+            try:
+                with _ndjson_temp(materialised) as ndjson_path:
+                    sql = f"""
+                        COPY (
+                            SELECT ref_date::DATE, value::DOUBLE, series_id::INTEGER,
+                                   series_name::VARCHAR, unit::VARCHAR, frequency::VARCHAR,
+                                   source::VARCHAR, fetched_at::VARCHAR
+                            FROM read_json_auto('{_esc(str(ndjson_path))}')
+                            ORDER BY ref_date
+                        ) TO '{_esc(str(tmp))}' (FORMAT PARQUET)
+                    """
+                    _run(sql)
+                os.replace(tmp, target)
+            finally:
+                tmp.unlink(missing_ok=True)
         return target
 
     def save_catalog_search(self, query: str, rows: list[dict[str, Any]]) -> Path | None:
@@ -278,14 +317,18 @@ class ParquetCache:
             return None
         digest = hashlib.sha1(query.lower().strip().encode("utf-8")).hexdigest()[:12]
         target = self.catalog_dir / f"search_{digest}.parquet"
-        tmp = target.with_suffix(".parquet.tmp")
-        with _ndjson_temp(rows) as ndjson_path:
-            sql = f"""
-                COPY (SELECT * FROM read_json_auto('{_esc(str(ndjson_path))}'))
-                TO '{_esc(str(tmp))}' (FORMAT PARQUET)
-            """
-            _run(sql)
-        os.replace(tmp, target)
+        with _cache_write_lock(self.root):
+            tmp = _temp_path(target)
+            try:
+                with _ndjson_temp(rows) as ndjson_path:
+                    sql = f"""
+                        COPY (SELECT * FROM read_json_auto('{_esc(str(ndjson_path))}'))
+                        TO '{_esc(str(tmp))}' (FORMAT PARQUET)
+                    """
+                    _run(sql)
+                os.replace(tmp, target)
+            finally:
+                tmp.unlink(missing_ok=True)
         return target
 
     def read_catalog_search(
@@ -345,14 +388,15 @@ class ParquetCache:
         statement = sql.strip().rstrip(";")
         if not statement:
             raise ValueError("SQL statement is empty.")
-        if ";" in statement:
+        syntax = _strip_sql_literals(statement)
+        if ";" in syntax:
             raise ValueError("Only a single SQL statement is allowed.")
-        lowered = statement.lower()
+        lowered = syntax.strip().lower()
         if not lowered.startswith(_ALLOWED_SQL_PREFIXES):
             raise ValueError("Only read-only statements (SELECT/WITH/DESCRIBE/SHOW) are allowed.")
-        for token in _FORBIDDEN_SQL:
-            if token in lowered:
-                raise ValueError(f"Statement contains a forbidden keyword: {token!r}.")
+        match = _FORBIDDEN_SQL_RE.search(syntax)
+        if match:
+            raise ValueError(f"Statement contains a forbidden keyword: {match.group(1)!r}.")
 
         con = duckdb.connect()
         try:
@@ -437,22 +481,23 @@ class ParquetCache:
 
     def clear(self, series_ids: list[int] | None = None) -> dict[str, Any]:
         removed: list[str] = []
-        if series_ids:
-            for series_id in series_ids:
-                for path in (
-                    self.series_path(int(series_id)),
-                    self.meta_path(int(series_id)),
-                    *self.query_dir.glob(f"sgs_{int(series_id)}__*.parquet"),
-                ):
-                    if path.exists():
-                        path.unlink()
-                        removed.append(str(path.relative_to(self.root)))
-        else:
-            for directory in (self.series_dir, self.query_dir, self.catalog_dir, self.meta_dir):
-                for path in directory.glob("*"):
-                    if path.is_file():
-                        path.unlink()
-                        removed.append(str(path.relative_to(self.root)))
+        with _cache_write_lock(self.root):
+            if series_ids:
+                for series_id in series_ids:
+                    for path in (
+                        self.series_path(int(series_id)),
+                        self.meta_path(int(series_id)),
+                        *self.query_dir.glob(f"sgs_{int(series_id)}__*.parquet"),
+                    ):
+                        if path.exists():
+                            path.unlink()
+                            removed.append(str(path.relative_to(self.root)))
+            else:
+                for directory in (self.series_dir, self.query_dir, self.catalog_dir, self.meta_dir):
+                    for path in directory.glob("*"):
+                        if path.is_file():
+                            path.unlink()
+                            removed.append(str(path.relative_to(self.root)))
         return {
             "cleared": bool(removed),
             "removed_count": len(removed),
@@ -492,6 +537,57 @@ def _as_ranges(items: Iterable[Any]) -> list[tuple[dt.date, dt.date]]:
 
 def _esc(value: str) -> str:
     return value.replace("'", "''")
+
+
+def _temp_path(target: Path) -> Path:
+    """A unique temporary sibling of ``target``.
+
+    The old fixed ``<name>.parquet.tmp`` collided when several MCP clients
+    shared the same cache directory; a random suffix makes concurrent writers
+    safe (the final ``os.replace`` is atomic).
+    """
+    fd, name = tempfile.mkstemp(prefix=f".{target.name}.", suffix=".tmp", dir=str(target.parent))
+    os.close(fd)
+    return Path(name)
+
+
+@contextlib.contextmanager
+def _cache_write_lock(root: Path) -> Iterator[None]:
+    """Cross-process advisory lock guarding cache mutations."""
+    lock_path = root / ".write.lock"
+    with lock_path.open("a+b") as handle:
+        locked = False
+        try:
+            import fcntl
+
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+            locked = True
+        except ImportError:  # pragma: no cover - Windows
+            try:
+                import msvcrt
+
+                handle.seek(0)
+                if handle.read(1) == b"":
+                    handle.write(b"\0")
+                    handle.flush()
+                handle.seek(0)
+                msvcrt.locking(handle.fileno(), msvcrt.LK_LOCK, 1)
+                locked = True
+            except (ImportError, OSError):  # pragma: no cover - best effort
+                logger.debug("file locking unavailable; continuing without it")
+        try:
+            yield
+        finally:
+            if locked:
+                try:
+                    import fcntl
+
+                    fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+                except ImportError:  # pragma: no cover - Windows
+                    import msvcrt
+
+                    handle.seek(0)
+                    msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
 
 
 def _run(sql: str) -> None:

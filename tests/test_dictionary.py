@@ -54,6 +54,12 @@ def test_normalize_strips_accents_and_case() -> None:
         ("pib", 22099),
         ("divida bruta", 13762),
         ("credito", 20539),
+        ("ipca 12 meses", 13522),
+        ("inflacao acumulada", 13522),
+        ("nucleo", 11427),
+        ("media aparada", 4466),
+        ("divida publica", 4513),
+        ("taxa de cambio", 1),
     ],
 )
 def test_search_finds_headline_series(
@@ -65,6 +71,28 @@ def test_search_finds_headline_series(
 
 def test_search_is_accent_insensitive(dictionary: SeriesDictionary) -> None:
     assert dictionary.search("inflacao")[0][0].id == dictionary.search("inflação")[0][0].id
+
+
+@pytest.mark.parametrize(
+    ("query", "expected_id"),
+    [
+        ("núcleo da inflação", 11427),
+        ("taxa de câmbio", 1),
+        ("dívida pública", 4513),
+        ("variação do ipca em 12 meses", 13522),
+    ],
+)
+def test_search_handles_natural_portuguese(
+    dictionary: SeriesDictionary, query: str, expected_id: int
+) -> None:
+    hits = [info.id for info, _ in dictionary.search(query, limit=5)]
+    assert expected_id in hits
+
+
+def test_resolve_natural_aliases(dictionary: SeriesDictionary) -> None:
+    assert dictionary.resolve("taxa de câmbio").id == 1
+    assert dictionary.resolve("dívida pública").id == 4513
+    assert dictionary.resolve("ipca 12 meses").id == 13522
 
 
 def test_search_respects_category(dictionary: SeriesDictionary) -> None:

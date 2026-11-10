@@ -17,6 +17,42 @@ from typing import Any
 
 DATA_FILE = "series_dictionary.json"
 
+# Function words ignored when matching multi-word queries such as
+# "núcleo da inflação" or "taxa de câmbio".
+STOPWORDS = frozenset(
+    {
+        "a",
+        "o",
+        "as",
+        "os",
+        "de",
+        "da",
+        "das",
+        "do",
+        "dos",
+        "e",
+        "em",
+        "na",
+        "nas",
+        "no",
+        "nos",
+        "para",
+        "por",
+        "ao",
+        "aos",
+        "com",
+        "um",
+        "uma",
+        "the",
+        "of",
+        "and",
+        "to",
+        "in",
+        "on",
+        "for",
+    }
+)
+
 
 def normalize(text: str) -> str:
     """Lowercase, strip accents and collapse whitespace."""
@@ -149,7 +185,7 @@ class SeriesDictionary:
             pool = self.by_category(category) if category else self.all_series()
             return [(info, 1.0) for info in pool[:limit]]
 
-        tokens = needle.split()
+        tokens = [token for token in needle.split() if token not in STOPWORDS] or needle.split()
         cat_needle = normalize(category).replace(" ", "_") if category else None
         scored: list[tuple[SeriesInfo, float]] = []
 

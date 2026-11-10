@@ -56,6 +56,17 @@ def test_parse_bcb_date() -> None:
     assert parse_bcb_date("09/11/2026") == dt.date(2026, 11, 9)
 
 
+async def test_client_uses_configured_http_values() -> None:
+    from bcb_mcp.config import HTTP_TIMEOUT_SECONDS, MAX_CONCURRENCY
+
+    client = BCBClient()
+    try:
+        assert client._client.timeout.read == HTTP_TIMEOUT_SECONDS
+        assert client._semaphore._value == MAX_CONCURRENCY
+    finally:
+        await client.close()
+
+
 def test_split_date_range_short_span() -> None:
     chunks = split_date_range(dt.date(2024, 1, 1), dt.date(2024, 12, 31))
     assert chunks == [(dt.date(2024, 1, 1), dt.date(2024, 12, 31))]

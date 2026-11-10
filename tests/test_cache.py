@@ -157,6 +157,9 @@ def test_query_works_with_empty_cache(cache: ParquetCache) -> None:
         "DELETE FROM cached_series",
         "COPY (SELECT 1) TO '/tmp/x.csv'",
         "INSTALL httpfs",
+        "SET memory_limit='1GB'",
+        "SELECT * FROM read_text('/etc/passwd')",
+        "SELECT * FROM read_csv('/etc/passwd')",
         "SELECT 1; SELECT 2",
         "  ",
     ],
@@ -164,6 +167,12 @@ def test_query_works_with_empty_cache(cache: ParquetCache) -> None:
 def test_query_rejects_unsafe_sql(cache: ParquetCache, sql: str) -> None:
     with pytest.raises(ValueError):
         cache.query(sql)
+
+
+def test_query_ignores_keywords_inside_literals(cache: ParquetCache) -> None:
+    assert cache.query("SELECT 1 AS \"set time\", 'drop table x' AS note")["rows"] == [
+        {"set time": 1, "note": "drop table x"}
+    ]
 
 
 def test_query_enforces_limit(cache: ParquetCache) -> None:

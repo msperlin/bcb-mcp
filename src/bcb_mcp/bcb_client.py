@@ -20,6 +20,8 @@ from typing import Any
 import httpx
 
 from .config import (
+    HTTP_TIMEOUT_SECONDS,
+    MAX_CONCURRENCY,
     MAX_DAYS_PER_REQUEST,
     MAX_RETRIES,
     MIN_REQUEST_INTERVAL,
@@ -87,10 +89,10 @@ class BCBClient:
     def __init__(
         self,
         *,
-        timeout: float = 60.0,
+        timeout: float = HTTP_TIMEOUT_SECONDS,
         max_retries: int = MAX_RETRIES,
         min_interval: float = MIN_REQUEST_INTERVAL,
-        max_concurrency: int = 4,
+        max_concurrency: int = MAX_CONCURRENCY,
         client: httpx.AsyncClient | None = None,
     ) -> None:
         self.max_retries = max(1, max_retries)

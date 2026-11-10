@@ -64,7 +64,7 @@ def register_tools(mcp: FastMCP, service: SeriesService) -> None:
     ) -> dict[str, Any]:
         """Find BCB-SGS series ids from natural language.
 
-        Searches the bundled curated dictionary (148 key Brazilian macro series,
+        Searches the bundled curated dictionary (151 key Brazilian macro series,
         with Portuguese and English aliases) and, optionally, the official BCB
         catalog. Always call this before get_series() when you do not know the id.
         """
@@ -133,7 +133,8 @@ def register_tools(mcp: FastMCP, service: SeriesService) -> None:
             int,
             Field(
                 description=(
-                    "Maximum observations kept per series (most recent are kept). Defaults to 5000."
+                    "Maximum observations kept per series (most recent are kept). "
+                    "Defaults to 1000; raise it only when you really need the full history."
                 ),
                 ge=1,
                 le=100_000,
@@ -155,6 +156,10 @@ def register_tools(mcp: FastMCP, service: SeriesService) -> None:
         cached as parquet files, and only missing date ranges are downloaded on
         subsequent calls. Failed ids are reported in `failures` instead of aborting
         the whole request, exactly like the R package.
+
+        Rows are compact: each one has ref_date, value and series_id. The name,
+        unit, frequency and source of every series are in the `series` array, so
+        pair rows with `series` before writing prose (units differ across ids).
         """
         return await service.get_series(
             series_ids,

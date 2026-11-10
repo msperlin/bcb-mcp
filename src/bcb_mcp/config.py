@@ -7,7 +7,7 @@ from pathlib import Path
 
 APP_NAME = "bcb-mcp"
 PACKAGE_NAME = "bcb_mcp"
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 # --- BCB SGS endpoints -------------------------------------------------------
 SGS_DATA_URL = "https://api.bcb.gov.br/dados/serie/bcdata.sgs.{series_id}/dados"
@@ -28,10 +28,19 @@ MAX_CONCURRENCY = int(os.getenv("BCB_MCP_MAX_CONCURRENCY", "4"))
 MAX_DAYS_PER_REQUEST = 3652
 
 # --- Output limits -----------------------------------------------------------
-DEFAULT_MAX_ROWS = int(os.getenv("BCB_MCP_MAX_ROWS", "5000"))
+# 1,000 observations is already ~50k tokens of JSON per series; callers that
+# want full history should raise max_rows explicitly or query the cache with SQL.
+DEFAULT_MAX_ROWS = int(os.getenv("BCB_MCP_MAX_ROWS", "1000"))
 MAX_ROWS_LIMIT = 100_000
 DEFAULT_SEARCH_RESULTS = 25
 MAX_SEARCH_RESULTS = 500
+
+# --- Cache freshness ---------------------------------------------------------
+# When a request touches the present, re-download the last few days once the
+# cached copy is older than a few minutes, so provisional BCB revisions and new
+# observations are picked up without refetching on every call.
+TAIL_REFRESH_DAYS = int(os.getenv("BCB_MCP_TAIL_REFRESH_DAYS", "3"))
+TAIL_REFRESH_MINUTES = int(os.getenv("BCB_MCP_TAIL_REFRESH_MINUTES", "60"))
 
 # --- Cache -------------------------------------------------------------------
 ENV_CACHE_DIR = "BCB_MCP_CACHE_DIR"

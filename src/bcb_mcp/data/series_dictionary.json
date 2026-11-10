@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "source": "Banco Central do Brasil - SGS (Sistema Gerenciador de Series Temporais)",
   "source_url": "https://www.bcb.gov.br/estatisticas/txjuros",
   "generated_at": "2026-11-10",
@@ -116,7 +116,8 @@
         "selic target",
         "target rate",
         "juros",
-        "taxa de juros"
+        "taxa de juros",
+        "taxa selic meta"
       ]
     },
     {
@@ -251,7 +252,10 @@
         "inflacao oficial",
         "consumer price index",
         "cpi",
-        "indice de precos"
+        "indice de precos",
+        "ipca mensal",
+        "inflacao mensal",
+        "headline inflation"
       ]
     },
     {
@@ -1044,7 +1048,11 @@
         "brl",
         "exchange rate",
         "ptax",
-        "dolar comercial"
+        "dolar comercial",
+        "taxa de cambio",
+        "taxa de cambio dolar",
+        "cotacao do dolar",
+        "dollar"
       ]
     },
     {
@@ -1381,7 +1389,10 @@
         "divida liquida",
         "net debt",
         "divida liquida pib",
-        "dlsp"
+        "dlsp",
+        "divida publica",
+        "divida publica pib",
+        "public debt"
       ]
     },
     {
@@ -1410,7 +1421,9 @@
         "divida bruta",
         "gross debt",
         "divida bruta pib",
-        "dbgg"
+        "dbgg",
+        "divida publica bruta",
+        "public gross debt"
       ]
     },
     {
@@ -2181,6 +2194,66 @@
       "description": "Residential electricity consumption in Brazil.",
       "aliases": [
         "energia residencial"
+      ]
+    },
+    {
+      "id": 13522,
+      "name": "Broad National Consumer Price Index (IPCA) - accumulated in 12 months",
+      "name_pt": "IPCA - variacao acumulada em 12 meses",
+      "category": "inflation",
+      "unit": "%",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "Headline IPCA inflation accumulated over the last 12 months, the reference for the inflation target.",
+      "aliases": [
+        "ipca 12 meses",
+        "ipca 12m",
+        "ipca acumulado 12 meses",
+        "ipca acumulado",
+        "inflacao 12 meses",
+        "inflacao acumulada",
+        "inflacao em 12 meses",
+        "12 month inflation",
+        "annual inflation"
+      ]
+    },
+    {
+      "id": 11427,
+      "name": "Broad national consumer price index - EX0 Core IPCA",
+      "name_pt": "Nucleo do IPCA - EX0",
+      "category": "inflation",
+      "unit": "Monthly % var.",
+      "frequency": "Monthly",
+      "source": "BCB-Depec",
+      "description": "EX0 core inflation: IPCA excluding food at home and administered prices.",
+      "aliases": [
+        "nucleo",
+        "nucleo do ipca",
+        "nucleo ipca",
+        "nucleo da inflacao",
+        "nucleo inflacao",
+        "core",
+        "core inflation",
+        "ipca ex0",
+        "ex0"
+      ]
+    },
+    {
+      "id": 4466,
+      "name": "Broad national consumer price index - Smoothed trimmed mean Core IPCA",
+      "name_pt": "Nucleo do IPCA - media aparada",
+      "category": "inflation",
+      "unit": "Monthly % var.",
+      "frequency": "Monthly",
+      "source": "BCB-Depec",
+      "description": "Smoothed trimmed-mean core inflation of the IPCA.",
+      "aliases": [
+        "media aparada",
+        "nucleo media aparada",
+        "nucleo da inflacao media aparada",
+        "media aparada da inflacao",
+        "trimmed mean core",
+        "smoothed trimmed mean"
       ]
     }
   ]

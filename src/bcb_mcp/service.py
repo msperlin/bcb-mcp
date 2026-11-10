@@ -9,12 +9,14 @@ from collections.abc import Iterable
 from typing import Any
 
 from .bcb_client import BCBClient, BCBError, SeriesNotFound
-from .cache import ParquetCache
+from .cache import ParquetCache, merge_ranges
 from .config import (
     DEFAULT_MAX_ROWS,
     DEFAULT_SEARCH_RESULTS,
     MAX_ROWS_LIMIT,
     MAX_SEARCH_RESULTS,
+    TAIL_REFRESH_DAYS,
+    TAIL_REFRESH_MINUTES,
 )
 from .dictionary import SeriesDictionary, get_dictionary
 
@@ -85,9 +87,9 @@ class SeriesService:
         out = []
         for item in series_ids:
             info = self.dictionary.resolve(item)
-            cached = self.cache.read_meta(int(info.id)) if info else None
+            numeric = int(info.id) if info else _maybe_int(item)
+            cached = self.cache.read_meta(numeric) if numeric is not None else None
             if info is None:
-                numeric = _maybe_int(item)
                 if numeric is None:
                     out.append({"input": item, "found": False, "reason": "unknown alias or id"})
                     continue
@@ -97,6 +99,7 @@ class SeriesService:
                         "found": False,
                         "reason": "series id is not in the curated dictionary; it may still exist in SGS",
                         "suggestion": self.dictionary.suggest(str(item)),
+                        "cached": cached is not None,
                     }
                 )
                 continue
@@ -203,9 +206,13 @@ class SeriesService:
         if not ids:
             raise ValueError("series_ids must contain at least one id or alias.")
 
+        today = dt.date.today()
         first_date = parse_date(first_date)
         last_date = parse_date(last_date)
-        last = last_date or dt.date.today()
+        # BCB never has future observations. Clamping to today prevents a
+        # request such as last_date="2026-12-31" from marking future dates as
+        # covered and freezing the series until that date arrives.
+        last = min(last_date or today, today)
         first = first_date or (last - dt.timedelta(days=365 * DEFAULT_YEARS))
         if last < first:
             raise ValueError("last_date must be on or after first_date.")
@@ -240,7 +247,7 @@ class SeriesService:
             resolved.append((numeric, name))
 
         tasks = [
-            self._prepare_series(series_id, first, last, use_cache=use_cache)
+            self._prepare_series(series_id, first, last, use_cache=use_cache, today=today)
             for series_id, _ in resolved
         ]
         prepared = await asyncio.gather(*tasks, return_exceptions=True)
@@ -251,6 +258,10 @@ class SeriesService:
 
         for (series_id, name), outcome in zip(resolved, prepared, strict=False):
             if isinstance(outcome, Exception):
+                # Network/API errors are reported per series; anything else is a
+                # bug and should not be silently turned into a "failure".
+                if not isinstance(outcome, BCBError):
+                    raise outcome
                 failures.append(
                     {"series_id": series_id, "series_name": name, "error": str(outcome)}
                 )
@@ -275,8 +286,10 @@ class SeriesService:
 
             truncated = len(observations) > safe_max
             selected = observations[-safe_max:] if truncated else observations
-            fetched_at = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
 
+            # Keep the per-row payload minimal: repeating name/unit/frequency/
+            # source on every observation costs more tokens than the data itself.
+            # That metadata lives once in the `series` array.
             rows = [
                 {
                     "ref_date": obs["ref_date"].isoformat()
@@ -284,11 +297,6 @@ class SeriesService:
                     else str(obs["ref_date"]),
                     "value": obs["value"],
                     "series_id": series_id,
-                    "series_name": display_name,
-                    "unit": unit,
-                    "frequency": frequency,
-                    "source": source,
-                    "fetched_at": fetched_at,
                 }
                 for obs in selected
             ]
@@ -320,6 +328,22 @@ class SeriesService:
                 }
             )
 
+        # Two different ids can share a display name; make the wide columns unique
+        # instead of silently overwriting one series with another.
+        name_by_id: dict[int, str] = {}
+        used_names: set[str] = set()
+        warnings: list[str] = []
+        for meta in series_meta:
+            name = meta["series_name"]
+            if name in used_names:
+                name = f"{name} [{meta['series_id']}]"
+                meta["series_name"] = name
+                warnings.append(
+                    f"Duplicate series name; column renamed to {name!r} to keep ids distinct."
+                )
+            used_names.add(name)
+            name_by_id[meta["series_id"]] = name
+
         payload: dict[str, Any] = {
             "first_date": first.isoformat(),
             "last_date": last.isoformat(),
@@ -330,10 +354,13 @@ class SeriesService:
 
         if format_data == "wide":
             payload["columns"] = ["ref_date", *[meta["series_name"] for meta in series_meta]]
-            payload["rows"] = _to_wide(long_rows)
+            payload["rows"] = _to_wide(long_rows, name_by_id)
         else:
-            payload["columns"] = ["ref_date", "value", "series_id", "series_name", "unit"]
+            payload["columns"] = ["ref_date", "value", "series_id"]
             payload["rows"] = long_rows
+
+        if warnings:
+            payload["warnings"] = warnings
 
         payload["row_count"] = len(payload["rows"])
         if any(meta["truncated"] for meta in series_meta):
@@ -343,8 +370,32 @@ class SeriesService:
             )
         return payload
 
+    def _tail_refresh_range(
+        self, series_id: int, first: dt.date, last: dt.date, today: dt.date
+    ) -> tuple[dt.date, dt.date] | None:
+        """Return a recent sub-range to re-download when the data may have moved.
+
+        Only applies to windows that reach the present, and at most once every
+        ``TAIL_REFRESH_MINUTES`` per series.
+        """
+        if TAIL_REFRESH_DAYS <= 0 or last < today - dt.timedelta(days=1):
+            return None
+        meta = self.cache.read_meta(series_id)
+        if meta:
+            age = _age_minutes(meta.get("updated_at"))
+            if age is not None and age < TAIL_REFRESH_MINUTES:
+                return None
+        start = max(first, today - dt.timedelta(days=TAIL_REFRESH_DAYS))
+        return (start, last)
+
     async def _prepare_series(
-        self, series_id: int, first: dt.date, last: dt.date, *, use_cache: bool
+        self,
+        series_id: int,
+        first: dt.date,
+        last: dt.date,
+        *,
+        use_cache: bool,
+        today: dt.date,
     ) -> tuple[list[dict[str, Any]], bool, list[tuple[dt.date, dt.date]]]:
         """Return observations for a range, downloading only what is missing."""
         info = self.dictionary.get(series_id)
@@ -358,6 +409,12 @@ class SeriesService:
             gaps = [(first, last)]
         else:
             gaps = self.cache.missing_ranges(series_id, first, last)
+
+        # Revalidate the recent tail once in a while so new observations and
+        # BCB revisions show up even when the range is nominally covered.
+        tail = self._tail_refresh_range(series_id, first, last, today)
+        if tail:
+            gaps = merge_ranges([*gaps, tail])
 
         downloaded: list[tuple[dt.date, dt.date]] = []
         if gaps:
@@ -502,17 +559,27 @@ class SeriesService:
         return result
 
 
-def _to_wide(long_rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def _to_wide(long_rows: list[dict[str, Any]], name_by_id: dict[int, str]) -> list[dict[str, Any]]:
     """Pivot long rows to one column per series (like format_data='wide')."""
     by_date: dict[str, dict[str, Any]] = {}
-    order: list[str] = []
     for row in long_rows:
         key = row["ref_date"]
-        if key not in by_date:
-            by_date[key] = {"ref_date": key}
-            order.append(key)
-        by_date[key][row["series_name"]] = row["value"]
-    return [by_date[key] for key in sorted(order)]
+        by_date.setdefault(key, {"ref_date": key})
+        by_date[key][name_by_id[row["series_id"]]] = row["value"]
+    return [by_date[key] for key in sorted(by_date)]
+
+
+def _age_minutes(timestamp: str | None) -> float | None:
+    """Minutes elapsed since an ISO-8601 timestamp written by the cache."""
+    if not timestamp:
+        return None
+    try:
+        moment = dt.datetime.fromisoformat(timestamp)
+    except ValueError:
+        return None
+    if moment.tzinfo is None:
+        moment = moment.replace(tzinfo=dt.timezone.utc)
+    return (dt.datetime.now(dt.timezone.utc) - moment).total_seconds() / 60.0
 
 
 def _maybe_int(value: object) -> int | None:

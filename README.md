@@ -20,6 +20,9 @@ pip install bcb-mcp
 uvx bcb-mcp --stdio
 ```
 
+> **Note:** if PyPI returns "not found", the release is not published yet — use
+> the source install below (or `uvx --from git+https://github.com/msperlin/bcb-mcp bcb-mcp`).
+
 From source:
 
 ```bash
@@ -83,6 +86,21 @@ asyncio.run(main())
 | `clear_cache` | Evict selected series or the whole cache. |
 | `today` | Server date plus handy "one/five years ago" dates. |
 
+### Output shape
+
+`get_series` returns one compact row per observation (`ref_date`, `value`,
+`series_id`). The name, unit, frequency and source of each series are returned
+once in the `series` array, and `failures` lists the ids that could not be
+fetched. Payload size matters for LLMs: the default `max_rows` is **1,000 per
+series** (about 50k tokens of JSON), so use `get_series_stats` when you only need
+the numbers, `format_data="wide"` to align series on dates, or raise `max_rows`
+for the full history.
+
+Cache freshness: a range is downloaded once, but requests that reach the present
+revalidate the last `BCB_MCP_TAIL_REFRESH_DAYS` days at most every
+`BCB_MCP_TAIL_REFRESH_MINUTES` minutes, so new observations and BCB revisions
+show up without refetching on every call.
+
 ### Resources
 
 - `bcb://dictionary/series` — the full curated dictionary (JSON).
@@ -104,13 +122,16 @@ asyncio.run(main())
 
 > "Compare credit outstanding as a share of GDP with the average lending rate since 2015. Use SQL if needed."
 
-The model will call `search_series("selic")` → `get_series_stats([11, 433])` → `get_series([11, 433], format_data="wide")`, and can fall back to `query_cache` for cross-series SQL.
+The model will call `search_series("selic")` → `get_series_stats([432, 13522])` →
+`get_series([432, 13522], format_data="wide")`, and can fall back to `query_cache`
+for cross-series SQL. Note the units: `432` is the Selic target in `% p.y.`
+(comparable to annual inflation), while `11` is the daily Selic in `% p.d.`.
 
 ---
 
 ## The dictionary
 
-`src/bcb_mcp/data/series_dictionary.json` ships ~150 hand-picked series, each with:
+`src/bcb_mcp/data/series_dictionary.json` ships 151 hand-picked series, each with:
 
 ```json
 {
@@ -126,7 +147,7 @@ The model will call `search_series("selic")` → `get_series_stats([11, 433])` �
 }
 ```
 
-Search is accent- and case-insensitive (`desemprego`, `Desemprego`, `DESEMPREGO`), matches English and Portuguese, and ranks exact alias hits above substring hits. Anything not in the dictionary can still be found through the live BCB catalog search, and any numeric id can be passed straight to `get_series`.
+Search is accent- and case-insensitive (`desemprego`, `Desemprego`, `DESEMPREGO`), matches English and Portuguese, ignores short function words (`da`, `de`, `of`, ...) in multi-word queries, and ranks exact alias hits above substring hits. The catalog includes the headline aggregates an LLM usually asks for first — IPCA in 12 months (`13522`), core IPCA (`11427`/`4466`), gross and net public debt (`13762`/`4513`) — plus Portuguese aliases such as `dívida pública` and `taxa de câmbio`. Anything not in the dictionary can still be found through the live BCB catalog search (English names), and any numeric id can be passed straight to `get_series`.
 
 Regenerate the dictionary metadata from the official catalog:
 
@@ -144,11 +165,18 @@ python scripts/build_dictionary.py --check
 │   ├── series/sgs_11.parquet         # consolidated, deduplicated series store
 │   ├── queries/sgs_11__2024-01-01__2024-12-31.parquet
 │   └── catalog/search_<hash>.parquet # cached catalog searches
-└── meta/sgs_11.json                  # coverage ranges, rows, official metadata
+├── meta/sgs_11.json                  # coverage ranges, rows, official metadata
+└── .write.lock                       # cross-process lock for cache mutations
 ```
 
 - Every executed query is written as its own parquet file (auditable, reusable).
 - The consolidated store tracks **coverage intervals**: asking for 2010–2024 after having 2015–2024 downloads only 2010–2014.
+- Writes use a cross-process file lock and unique temporary files, so several
+  MCP clients (Claude Desktop, Cursor, OpenCode, …) can share the same cache
+  directory safely.
+- Requests that reach the present revalidate the last few days periodically
+  (see the freshness settings below); future dates are clamped to today so a
+  `last_date` in the future cannot mark data as permanently cached.
 - All I/O goes through DuckDB; no pandas/pyarrow needed.
 - Point the cache elsewhere with `--cache-dir` or `BCB_MCP_CACHE_DIR`.
 
@@ -192,7 +220,9 @@ Views available in `query_cache`: `cached_series`, `cached_queries`, `series_met
 | `BCB_MCP_MAX_RETRIES` | `3` | Retries per request (exponential backoff). |
 | `BCB_MCP_MIN_INTERVAL` | `0.2` | Minimum seconds between requests. |
 | `BCB_MCP_MAX_CONCURRENCY` | `4` | Concurrent series downloads. |
-| `BCB_MCP_MAX_ROWS` | `5000` | Default observations kept per series. |
+| `BCB_MCP_MAX_ROWS` | `1000` | Default observations kept per series. |
+| `BCB_MCP_TAIL_REFRESH_DAYS` | `3` | Days revalidated when a request reaches the present (0 disables). |
+| `BCB_MCP_TAIL_REFRESH_MINUTES` | `60` | How old the cached copy must be before the tail is revalidated. |
 
 ---
 
@@ -200,7 +230,7 @@ Views available in `query_cache`: `cached_series`, `cached_queries`, `series_met
 
 ```bash
 uv venv && uv pip install -e ".[dev]"
-pytest
+pytest --cov=bcb_mcp --cov-report=term-missing
 ruff check . && ruff format --check .
 ```
 
