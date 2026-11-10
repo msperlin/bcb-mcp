@@ -1,0 +1,2187 @@
+{
+  "version": "1.0.0",
+  "source": "Banco Central do Brasil - SGS (Sistema Gerenciador de Series Temporais)",
+  "source_url": "https://www.bcb.gov.br/estatisticas/txjuros",
+  "generated_at": "2026-11-10",
+  "categories": {
+    "interest_rates": {
+      "label": "Interest rates",
+      "label_pt": "Taxas de juros",
+      "description": "Policy rate (Selic), money-market rates (CDI, CDB) and their monthly/annual accumulations."
+    },
+    "inflation": {
+      "label": "Inflation and price indices",
+      "label_pt": "Inflacao e indices de precos",
+      "description": "Consumer, producer and construction cost indices published by IBGE and FGV."
+    },
+    "activity": {
+      "label": "Economic activity",
+      "label_pt": "Atividade economica",
+      "description": "GDP, IBC-Br, industrial production, services and vehicle output."
+    },
+    "labor": {
+      "label": "Labor market",
+      "label_pt": "Mercado de trabalho",
+      "description": "Unemployment, employment, labor income and minimum wage."
+    },
+    "external_sector": {
+      "label": "External sector",
+      "label_pt": "Setor externo",
+      "description": "Exchange rates, international reserves, trade balance, current account and foreign direct investment."
+    },
+    "fiscal": {
+      "label": "Fiscal policy and public debt",
+      "label_pt": "Politica fiscal e divida publica",
+      "description": "Primary and nominal results, gross and net public debt, central government revenue and expenditure."
+    },
+    "credit": {
+      "label": "Credit market",
+      "label_pt": "Mercado de credito",
+      "description": "Credit outstanding, lending rates, spreads and delinquency rates of the National Financial System."
+    },
+    "monetary": {
+      "label": "Monetary aggregates",
+      "label_pt": "Agregados monetarios",
+      "description": "Monetary base, M1 and broad money components."
+    },
+    "confidence": {
+      "label": "Confidence and expectations",
+      "label_pt": "Confianca e expectativas",
+      "description": "Consumer and business confidence surveys."
+    },
+    "markets": {
+      "label": "Markets and asset prices",
+      "label_pt": "Mercados e precos de ativos",
+      "description": "Equity market returns and residential real estate collateral values."
+    },
+    "commodities": {
+      "label": "Commodities and agricultural exports",
+      "label_pt": "Commodities e exportacoes agricolas",
+      "description": "Commodity price index and Brazilian exports of key commodities."
+    },
+    "energy": {
+      "label": "Energy and fuels",
+      "label_pt": "Energia e combustiveis",
+      "description": "Petroleum derivatives, ethanol and electricity consumption/production."
+    }
+  },
+  "series": [
+    {
+      "id": 11,
+      "name": "Interest rate - Selic",
+      "name_pt": "Taxa Selic (diaria)",
+      "category": "interest_rates",
+      "unit": "% p.d.",
+      "frequency": "Daily",
+      "source": "BCB-Demab",
+      "description": "Daily overnight Selic rate, the Brazilian policy rate in daily terms.",
+      "aliases": [
+        "selic",
+        "taxa selic",
+        "selic diaria",
+        "selic diário",
+        "overnight",
+        "policy rate"
+      ]
+    },
+    {
+      "id": 1178,
+      "name": "Interest rate - Selic in annual terms (basis 252)",
+      "name_pt": "Taxa Selic anualizada (base 252)",
+      "category": "interest_rates",
+      "unit": "% p.y.",
+      "frequency": "Daily",
+      "source": "BCB-Demab",
+      "description": "Selic rate annualized on a 252-business-day basis.",
+      "aliases": [
+        "selic anual",
+        "selic anualizada",
+        "selic annualized",
+        "selic a.a."
+      ]
+    },
+    {
+      "id": 432,
+      "name": "Interest rate - Selic target",
+      "name_pt": "Meta Selic definida pelo Copom",
+      "category": "interest_rates",
+      "unit": "% p.y.",
+      "frequency": "Daily",
+      "source": "Copom",
+      "description": "Selic target decided by the Copom, in annual terms.",
+      "aliases": [
+        "meta selic",
+        "selic meta",
+        "copom",
+        "selic target",
+        "target rate",
+        "juros",
+        "taxa de juros"
+      ]
+    },
+    {
+      "id": 4189,
+      "name": "Interest rate - Selic accumulated in the month in annual terms (basis 252)",
+      "name_pt": "Selic acumulada no mes anualizada",
+      "category": "interest_rates",
+      "unit": "% p.y.",
+      "frequency": "Monthly",
+      "source": "BCB-Demab",
+      "description": "Monthly accumulation of the Selic rate expressed in annual terms.",
+      "aliases": [
+        "selic acumulada mes anualizada"
+      ]
+    },
+    {
+      "id": 4390,
+      "name": "Interest rate - Selic accumulated in the month",
+      "name_pt": "Selic acumulada no mes",
+      "category": "interest_rates",
+      "unit": "% p.m.",
+      "frequency": "Monthly",
+      "source": "BCB-Demab",
+      "description": "Selic rate accumulated in the month, in monthly percentage terms.",
+      "aliases": [
+        "selic mensal",
+        "selic acumulada no mes",
+        "selic monthly"
+      ]
+    },
+    {
+      "id": 12,
+      "name": "Interest rate - CDI",
+      "name_pt": "Taxa CDI (diaria)",
+      "category": "interest_rates",
+      "unit": "% p.d.",
+      "frequency": "Daily",
+      "source": "Cetip",
+      "description": "Daily interbank deposit certificate (CDI) rate.",
+      "aliases": [
+        "cdi",
+        "taxa cdi",
+        "cdi diario",
+        "interbank rate"
+      ]
+    },
+    {
+      "id": 4389,
+      "name": "Interest rate - CDI in annual terms (basis 252)",
+      "name_pt": "CDI anualizado (base 252)",
+      "category": "interest_rates",
+      "unit": "% p.y.",
+      "frequency": "Daily",
+      "source": "BCB-Demab",
+      "description": "CDI rate annualized on a 252-business-day basis.",
+      "aliases": [
+        "cdi anual",
+        "cdi anualizado",
+        "cdi a.a."
+      ]
+    },
+    {
+      "id": 4391,
+      "name": "Interest rate - CDI accumulated in the month",
+      "name_pt": "CDI acumulado no mes",
+      "category": "interest_rates",
+      "unit": "% p.m.",
+      "frequency": "Monthly",
+      "source": "BCB-Demab",
+      "description": "CDI rate accumulated in the month.",
+      "aliases": [
+        "cdi mensal",
+        "cdi acumulado no mes"
+      ]
+    },
+    {
+      "id": 4392,
+      "name": "Interest rate - CDI accumulated in the month in annual terms (basis 252)",
+      "name_pt": "CDI acumulado no mes anualizado",
+      "category": "interest_rates",
+      "unit": "% p.y.",
+      "frequency": "Monthly",
+      "source": "BCB-Demab",
+      "description": "Monthly CDI accumulation expressed in annual terms.",
+      "aliases": [
+        "cdi acumulado mes anualizado"
+      ]
+    },
+    {
+      "id": 1157,
+      "name": "Average floating interest time deposits rate (CDB/RDB) - Total",
+      "name_pt": "Taxa media de CDB/RDB",
+      "category": "interest_rates",
+      "unit": "% p.d.",
+      "frequency": "Daily",
+      "source": "Sisbacen PESP300",
+      "description": "Average rate on floating-rate time deposits (CDB/RDB).",
+      "aliases": [
+        "cdb",
+        "rdb",
+        "taxa cdb",
+        "time deposit rate"
+      ]
+    },
+    {
+      "id": 1159,
+      "name": "Average other floating interest time deposits rate (CDB/RDB) - Total",
+      "name_pt": "Taxa media de outros CDB/RDB",
+      "category": "interest_rates",
+      "unit": "% p.d.",
+      "frequency": "Daily",
+      "source": "Sisbacen PESP300",
+      "description": "Average rate on other floating-rate time deposits (CDB/RDB).",
+      "aliases": [
+        "cdb outros",
+        "rdb outros"
+      ]
+    },
+    {
+      "id": 433,
+      "name": "Broad National Consumer Price Index (IPCA)",
+      "name_pt": "IPCA - Indice Nacional de Precos ao Consumidor Amplo",
+      "category": "inflation",
+      "unit": "Monthly % var.",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "Headline Brazilian consumer inflation (IPCA), monthly percentage change. Official inflation target metric.",
+      "aliases": [
+        "ipca",
+        "inflacao",
+        "inflação",
+        "inflacao oficial",
+        "consumer price index",
+        "cpi",
+        "indice de precos"
+      ]
+    },
+    {
+      "id": 7478,
+      "name": "National Consumer Price Index-Extended 15 (IPCA-15)",
+      "name_pt": "IPCA-15",
+      "category": "inflation",
+      "unit": "Monthly % var.",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "IPCA-15, a mid-month preview of the official consumer price index.",
+      "aliases": [
+        "ipca-15",
+        "ipca 15",
+        "ipca15",
+        "previa do ipca"
+      ]
+    },
+    {
+      "id": 188,
+      "name": "National Consumer Price Index (INPC)",
+      "name_pt": "INPC - Indice Nacional de Precos ao Consumidor",
+      "category": "inflation",
+      "unit": "Monthly % var.",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "Consumer price index for lower-income households (INPC).",
+      "aliases": [
+        "inpc",
+        "inflacao familias baixa renda"
+      ]
+    },
+    {
+      "id": 189,
+      "name": "General Price Index-Market (IGP-M)",
+      "name_pt": "IGP-M - Indice Geral de Precos do Mercado",
+      "category": "inflation",
+      "unit": "Monthly % var.",
+      "frequency": "Monthly",
+      "source": "FGV",
+      "description": "FGV general price index used to adjust many contracts (rent, utilities).",
+      "aliases": [
+        "igp-m",
+        "igpm",
+        "igp m",
+        "indice geral de precos"
+      ]
+    },
+    {
+      "id": 190,
+      "name": "General Price Index-Domestic Supply (IGP-DI)",
+      "name_pt": "IGP-DI - Indice Geral de Precos - Disponibilidade Interna",
+      "category": "inflation",
+      "unit": "Monthly % var.",
+      "frequency": "Monthly",
+      "source": "FGV",
+      "description": "FGV general price index for domestic supply (IGP-DI).",
+      "aliases": [
+        "igp-di",
+        "igpdi",
+        "igp di"
+      ]
+    },
+    {
+      "id": 192,
+      "name": "National Index of Building Costs (INCC)",
+      "name_pt": "INCC - Indice Nacional de Custo da Construcao",
+      "category": "inflation",
+      "unit": "Monthly % var.",
+      "frequency": "Monthly",
+      "source": "FGV",
+      "description": "Construction cost index (INCC), widely used to adjust real estate contracts.",
+      "aliases": [
+        "incc",
+        "custo da construcao",
+        "construction cost"
+      ]
+    },
+    {
+      "id": 7456,
+      "name": "National Index of Building Costs-Market (INCC-M)",
+      "name_pt": "INCC-M",
+      "category": "inflation",
+      "unit": "Monthly % var.",
+      "frequency": "Monthly",
+      "source": "FGV",
+      "description": "INCC-M, the market version of the construction cost index.",
+      "aliases": [
+        "incc-m",
+        "inccm"
+      ]
+    },
+    {
+      "id": 7450,
+      "name": "Broad Producer Price Index (IPA-M)",
+      "name_pt": "IPA-M - Indice de Precos ao Produtor Amplo",
+      "category": "inflation",
+      "unit": "Monthly % var.",
+      "frequency": "Monthly",
+      "source": "FGV",
+      "description": "Producer price index (IPA-M), wholesale prices at the producer level.",
+      "aliases": [
+        "ipa",
+        "ipa-m",
+        "ipam",
+        "precos ao produtor",
+        "producer prices"
+      ]
+    },
+    {
+      "id": 191,
+      "name": "Consumer Price Index-Brazil (IPC-Br)",
+      "name_pt": "IPC-Br (FGV)",
+      "category": "inflation",
+      "unit": "Monthly % var.",
+      "frequency": "Monthly",
+      "source": "FGV",
+      "description": "FGV consumer price index for Brazil (IPC-Br).",
+      "aliases": [
+        "ipc-br",
+        "ipc brasil",
+        "ipc fgv"
+      ]
+    },
+    {
+      "id": 193,
+      "name": "Consumer Price Index-Sao Paulo (IPC-Fipe)",
+      "name_pt": "IPC-Fipe (Sao Paulo)",
+      "category": "inflation",
+      "unit": "Monthly % var.",
+      "frequency": "Monthly",
+      "source": "Fipe",
+      "description": "Consumer price index for the city of Sao Paulo (IPC-Fipe).",
+      "aliases": [
+        "ipc-fipe",
+        "ipc fipe",
+        "fipe"
+      ]
+    },
+    {
+      "id": 4467,
+      "name": "Consumer Price Index-Brazil core (Core IPC-Br)",
+      "name_pt": "Nucleo do IPC-Br",
+      "category": "inflation",
+      "unit": "Monthly % var.",
+      "frequency": "Monthly",
+      "source": "FGV",
+      "description": "Core measure of the FGV IPC-Br.",
+      "aliases": [
+        "nucleo ipc",
+        "core ipc",
+        "ipc core"
+      ]
+    },
+    {
+      "id": 4447,
+      "name": "Broad national consumer price index (IPCA) - Tradable goods",
+      "name_pt": "IPCA - Bens comercializaveis",
+      "category": "inflation",
+      "unit": "Monthly % var.",
+      "frequency": "Monthly",
+      "source": "BCB-Depec",
+      "description": "IPCA component: tradable goods.",
+      "aliases": [
+        "ipca comercializaveis",
+        "ipca tradables"
+      ]
+    },
+    {
+      "id": 4448,
+      "name": "Broad national consumer price index (IPCA) - Non-tradable goods",
+      "name_pt": "IPCA - Bens nao comercializaveis",
+      "category": "inflation",
+      "unit": "Monthly % var.",
+      "frequency": "Monthly",
+      "source": "BCB-Depec",
+      "description": "IPCA component: non-tradable goods and services.",
+      "aliases": [
+        "ipca nao comercializaveis",
+        "ipca non-tradables"
+      ]
+    },
+    {
+      "id": 1635,
+      "name": "Broad national consumer price index (IPCA) - Food and beverages",
+      "name_pt": "IPCA - Alimentacao e bebidas",
+      "category": "inflation",
+      "unit": "Monthly % var.",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "IPCA group: food and beverages.",
+      "aliases": [
+        "ipca alimentacao",
+        "ipca alimentos"
+      ]
+    },
+    {
+      "id": 1636,
+      "name": "Broad national consumer price index (IPCA) - Housing",
+      "name_pt": "IPCA - Habitacao",
+      "category": "inflation",
+      "unit": "Monthly % var.",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "IPCA group: housing.",
+      "aliases": [
+        "ipca habitacao",
+        "ipca moradia"
+      ]
+    },
+    {
+      "id": 1637,
+      "name": "Broad national consumer price index (IPCA) - Domestic goods",
+      "name_pt": "IPCA - Artigos de residencia",
+      "category": "inflation",
+      "unit": "Monthly % var.",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "IPCA group: household goods.",
+      "aliases": [
+        "ipca artigos de residencia"
+      ]
+    },
+    {
+      "id": 1638,
+      "name": "Broad national consumer price index (IPCA) - Clothing",
+      "name_pt": "IPCA - Vestuario",
+      "category": "inflation",
+      "unit": "Monthly % var.",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "IPCA group: clothing.",
+      "aliases": [
+        "ipca vestuario"
+      ]
+    },
+    {
+      "id": 1639,
+      "name": "Broad national consumer price index (IPCA) - Transport",
+      "name_pt": "IPCA - Transportes",
+      "category": "inflation",
+      "unit": "Monthly % var.",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "IPCA group: transport.",
+      "aliases": [
+        "ipca transportes"
+      ]
+    },
+    {
+      "id": 1640,
+      "name": "Broad national consumer price index (IPCA) - Communication",
+      "name_pt": "IPCA - Comunicacao",
+      "category": "inflation",
+      "unit": "Monthly % var.",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "IPCA group: communication.",
+      "aliases": [
+        "ipca comunicacao"
+      ]
+    },
+    {
+      "id": 1641,
+      "name": "Broad national consumer price index (IPCA) - Health and personal care",
+      "name_pt": "IPCA - Saude e cuidados pessoais",
+      "category": "inflation",
+      "unit": "Monthly % var.",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "IPCA group: health and personal care.",
+      "aliases": [
+        "ipca saude"
+      ]
+    },
+    {
+      "id": 1642,
+      "name": "Broad national consumer price index (IPCA) - Personal expenditures",
+      "name_pt": "IPCA - Despesas pessoais",
+      "category": "inflation",
+      "unit": "Monthly % var.",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "IPCA group: personal expenditures.",
+      "aliases": [
+        "ipca despesas pessoais"
+      ]
+    },
+    {
+      "id": 1643,
+      "name": "Broad national consumer price index (IPCA) - Education",
+      "name_pt": "IPCA - Educacao",
+      "category": "inflation",
+      "unit": "Monthly % var.",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "IPCA group: education.",
+      "aliases": [
+        "ipca educacao"
+      ]
+    },
+    {
+      "id": 7465,
+      "name": "Consumer Price Index (IPC-Fipe) - Food stuffs",
+      "name_pt": "IPC-Fipe - Alimentacao",
+      "category": "inflation",
+      "unit": "Monthly % var.",
+      "frequency": "Monthly",
+      "source": "Fipe",
+      "description": "IPC-Fipe component: food stuffs.",
+      "aliases": [
+        "ipc fipe alimentacao"
+      ]
+    },
+    {
+      "id": 7466,
+      "name": "Consumer Price Index (IPC-Fipe) - Semi industrialized goods",
+      "name_pt": "IPC-Fipe - Semi-industrializados",
+      "category": "inflation",
+      "unit": "Monthly % var.",
+      "frequency": "Monthly",
+      "source": "Fipe",
+      "description": "IPC-Fipe component: semi-industrialized goods.",
+      "aliases": [
+        "ipc fipe semi industrializados"
+      ]
+    },
+    {
+      "id": 22099,
+      "name": "Quarterly GDP - observed data - GDP at market prices",
+      "name_pt": "PIB trimestral - dados observados",
+      "category": "activity",
+      "unit": "Index",
+      "frequency": "Quarterly",
+      "source": "IBGE",
+      "description": "Quarterly GDP index at market prices, observed (not seasonally adjusted) data.",
+      "aliases": [
+        "pib",
+        "pib trimestral",
+        "gdp",
+        "quarterly gdp",
+        "produto interno bruto"
+      ]
+    },
+    {
+      "id": 22109,
+      "name": "Quarterly GDP - seasonally adjusted data - GDP at market prices",
+      "name_pt": "PIB trimestral - ajuste sazonal",
+      "category": "activity",
+      "unit": "Index",
+      "frequency": "Quarterly",
+      "source": "IBGE",
+      "description": "Quarterly GDP index at market prices, seasonally adjusted.",
+      "aliases": [
+        "pib ajuste sazonal",
+        "gdp seasonally adjusted"
+      ]
+    },
+    {
+      "id": 4380,
+      "name": "GDP monthly - current prices (R$ million)",
+      "name_pt": "PIB mensal - precos correntes",
+      "category": "activity",
+      "unit": "R$ (million)",
+      "frequency": "Monthly",
+      "source": "BCB-Depec",
+      "description": "Monthly GDP proxy at current prices, in millions of reais.",
+      "aliases": [
+        "pib mensal",
+        "pib nominal mensal"
+      ]
+    },
+    {
+      "id": 4385,
+      "name": "GDP monthly - in US$ million",
+      "name_pt": "PIB mensal em US$",
+      "category": "activity",
+      "unit": "US$ (million)",
+      "frequency": "Monthly",
+      "source": "BCB-Depec",
+      "description": "Monthly GDP proxy converted to US dollars.",
+      "aliases": [
+        "pib mensal usd"
+      ]
+    },
+    {
+      "id": 24364,
+      "name": "Central Bank Economic Activity Index (IBC-Br) - seasonally adjusted",
+      "name_pt": "IBC-Br - ajuste sazonal",
+      "category": "activity",
+      "unit": "Index",
+      "frequency": "Monthly",
+      "source": "BCB-Depec",
+      "description": "Monthly proxy for Brazilian economic activity (IBC-Br), seasonally adjusted.",
+      "aliases": [
+        "ibc-br",
+        "ibc br",
+        "ibcbr",
+        "atividade economica",
+        "economic activity"
+      ]
+    },
+    {
+      "id": 21859,
+      "name": "Industrial production index - Total",
+      "name_pt": "Producao industrial - total (PIM-PF)",
+      "category": "activity",
+      "unit": "Index",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "Industrial production index for Brazil (PIM-PF), total industry.",
+      "aliases": [
+        "producao industrial",
+        "pim",
+        "industrial production",
+        "pim-pf"
+      ]
+    },
+    {
+      "id": 23982,
+      "name": "PMS - Volume Index from services - Total - Brazil",
+      "name_pt": "PMS - Volume de servicos - Brasil",
+      "category": "activity",
+      "unit": "Index",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "Volume index of services (PMS), total Brazil.",
+      "aliases": [
+        "servicos",
+        "pms",
+        "volume de servicos",
+        "services"
+      ]
+    },
+    {
+      "id": 21637,
+      "name": "PMS - Nominal revenue from services - Total - Brazil",
+      "name_pt": "PMS - Receita nominal de servicos - Brasil",
+      "category": "activity",
+      "unit": "Index",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "Nominal revenue index of services (PMS), total Brazil.",
+      "aliases": [
+        "receita servicos",
+        "pms receita"
+      ]
+    },
+    {
+      "id": 21638,
+      "name": "PMS - Services rendered to families - Brazil",
+      "name_pt": "PMS - Servicos prestados as familias",
+      "category": "activity",
+      "unit": "Index",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "PMS component: services rendered to families.",
+      "aliases": [
+        "servicos familias"
+      ]
+    },
+    {
+      "id": 21639,
+      "name": "PMS - Communication and information services - Brazil",
+      "name_pt": "PMS - Comunicacao e informacao",
+      "category": "activity",
+      "unit": "Index",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "PMS component: communication and information services.",
+      "aliases": [
+        "servicos informacao"
+      ]
+    },
+    {
+      "id": 21640,
+      "name": "PMS - Professional, administrative and complementary services - Brazil",
+      "name_pt": "PMS - Servicos profissionais e administrativos",
+      "category": "activity",
+      "unit": "Index",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "PMS component: professional, administrative and complementary services.",
+      "aliases": [
+        "servicos profissionais"
+      ]
+    },
+    {
+      "id": 21641,
+      "name": "PMS - Transportation, support activities for transportation and mailing activities - Brazil",
+      "name_pt": "PMS - Transportes e correio",
+      "category": "activity",
+      "unit": "Index",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "PMS component: transportation, support and mailing activities.",
+      "aliases": [
+        "servicos transporte"
+      ]
+    },
+    {
+      "id": 21642,
+      "name": "PMS - Other services - Brazil",
+      "name_pt": "PMS - Outros servicos",
+      "category": "activity",
+      "unit": "Index",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "PMS component: other services.",
+      "aliases": [
+        "outros servicos"
+      ]
+    },
+    {
+      "id": 1373,
+      "name": "Vehicles production (total)",
+      "name_pt": "Producao de veiculos (total)",
+      "category": "activity",
+      "unit": "units",
+      "frequency": "Monthly",
+      "source": "Anfavea",
+      "description": "Total vehicles produced in Brazil (Anfavea).",
+      "aliases": [
+        "producao de veiculos",
+        "anfavea",
+        "vehicle production"
+      ]
+    },
+    {
+      "id": 1374,
+      "name": "Passenger cars and light commercial vehicles production",
+      "name_pt": "Producao de automoveis e comerciais leves",
+      "category": "activity",
+      "unit": "units",
+      "frequency": "Monthly",
+      "source": "Anfavea",
+      "description": "Passenger cars and light commercial vehicles produced in Brazil.",
+      "aliases": [
+        "producao automoveis",
+        "car production"
+      ]
+    },
+    {
+      "id": 28527,
+      "name": "Vehicles production (total) - Seasonally Adjusted",
+      "name_pt": "Producao de veiculos - ajuste sazonal",
+      "category": "activity",
+      "unit": "%",
+      "frequency": "Monthly",
+      "source": "Anfavea",
+      "description": "Seasonally adjusted vehicle production.",
+      "aliases": [
+        "producao veiculos ajustada"
+      ]
+    },
+    {
+      "id": 1338,
+      "name": "Real industrial sales (1992=100) - Manufacturing industry (CNI)",
+      "name_pt": "Vendas industriais reais - industria de transformacao (CNI)",
+      "category": "activity",
+      "unit": "Index",
+      "frequency": "Monthly",
+      "source": "CNI",
+      "description": "Real industrial sales of the manufacturing industry (CNI).",
+      "aliases": [
+        "vendas industriais",
+        "cni vendas"
+      ]
+    },
+    {
+      "id": 1406,
+      "name": "Electric energy consumption - Brazil - total",
+      "name_pt": "Consumo de energia eletrica - Brasil",
+      "category": "activity",
+      "unit": "GWh",
+      "frequency": "Monthly",
+      "source": "Eletrobras",
+      "description": "Total electricity consumption in Brazil.",
+      "aliases": [
+        "consumo energia eletrica",
+        "electricity consumption"
+      ]
+    },
+    {
+      "id": 24369,
+      "name": "Unemployment rate - PNADC",
+      "name_pt": "Taxa de desocupacao - PNAD Continua",
+      "category": "labor",
+      "unit": "%",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "Unemployment rate from the Continuous PNAD survey.",
+      "aliases": [
+        "desemprego",
+        "taxa de desemprego",
+        "unemployment",
+        "unemployment rate",
+        "pnadc"
+      ]
+    },
+    {
+      "id": 24370,
+      "name": "Working age population - Continuous PNAD",
+      "name_pt": "Populacao em idade de trabalhar - PNAD Continua",
+      "category": "labor",
+      "unit": "Units (thousand)",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "Population of working age (14+) from the Continuous PNAD.",
+      "aliases": [
+        "populacao em idade de trabalhar",
+        "working age population"
+      ]
+    },
+    {
+      "id": 24378,
+      "name": "Labor force population - Continuous PNAD",
+      "name_pt": "Forca de trabalho - PNAD Continua",
+      "category": "labor",
+      "unit": "Units (thousand)",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "Labor force (employed plus unemployed) from the Continuous PNAD.",
+      "aliases": [
+        "forca de trabalho",
+        "labor force",
+        "pea"
+      ]
+    },
+    {
+      "id": 24379,
+      "name": "Employed population - Continuous PNAD",
+      "name_pt": "Populacao ocupada - PNAD Continua",
+      "category": "labor",
+      "unit": "Units (thousand)",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "Employed population from the Continuous PNAD.",
+      "aliases": [
+        "populacao ocupada",
+        "pessoas ocupadas",
+        "employment",
+        "employed"
+      ]
+    },
+    {
+      "id": 24380,
+      "name": "Unemployed population - Continuous PNAD",
+      "name_pt": "Populacao desocupada - PNAD Continua",
+      "category": "labor",
+      "unit": "Units (thousand)",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "Unemployed population from the Continuous PNAD.",
+      "aliases": [
+        "populacao desocupada",
+        "desocupados",
+        "unemployed"
+      ]
+    },
+    {
+      "id": 24381,
+      "name": "Real effective average earnings of employed people - Continuous PNAD",
+      "name_pt": "Rendimento medio real - PNAD Continua",
+      "category": "labor",
+      "unit": "R$",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "Average real earnings of employed people (Continuous PNAD).",
+      "aliases": [
+        "rendimento medio",
+        "salario medio",
+        "average earnings",
+        "wage"
+      ]
+    },
+    {
+      "id": 24372,
+      "name": "Employed people in the public sector - Continuous PNAD",
+      "name_pt": "Ocupados no setor publico - PNAD Continua",
+      "category": "labor",
+      "unit": "Units (thousand)",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "Employed people in the public sector.",
+      "aliases": [
+        "ocupados setor publico"
+      ]
+    },
+    {
+      "id": 24373,
+      "name": "Employed people - Self-employed - Continuous PNAD",
+      "name_pt": "Ocupados por conta propria",
+      "category": "labor",
+      "unit": "Units (thousand)",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "Self-employed workers.",
+      "aliases": [
+        "conta propria",
+        "self-employed"
+      ]
+    },
+    {
+      "id": 24374,
+      "name": "Employed people - Employer - Continuous PNAD",
+      "name_pt": "Ocupados empregadores",
+      "category": "labor",
+      "unit": "Units (thousand)",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "Employers.",
+      "aliases": [
+        "empregadores",
+        "employers"
+      ]
+    },
+    {
+      "id": 24375,
+      "name": "Employed in the private sector - Continuous PNAD",
+      "name_pt": "Ocupados no setor privado",
+      "category": "labor",
+      "unit": "Units (thousand)",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "Employed people in the private sector.",
+      "aliases": [
+        "setor privado",
+        "private sector employment"
+      ]
+    },
+    {
+      "id": 24376,
+      "name": "Employed in the private sector - Nonregistered - Continuous PNAD",
+      "name_pt": "Ocupados sem carteira assinada",
+      "category": "labor",
+      "unit": "Units (thousand)",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "Private sector employees without a formal contract (informality).",
+      "aliases": [
+        "informalidade",
+        "sem carteira",
+        "informal workers"
+      ]
+    },
+    {
+      "id": 24377,
+      "name": "Employed in the private sector - Total - Continuous PNAD",
+      "name_pt": "Ocupados no setor privado com carteira",
+      "category": "labor",
+      "unit": "Units (thousand)",
+      "frequency": "Monthly",
+      "source": "IBGE",
+      "description": "Private sector employees with a formal contract.",
+      "aliases": [
+        "com carteira",
+        "formal employment"
+      ]
+    },
+    {
+      "id": 1619,
+      "name": "Minimum wage",
+      "name_pt": "Salario minimo",
+      "category": "labor",
+      "unit": "c.m.u.",
+      "frequency": "Monthly",
+      "source": "MTb",
+      "description": "Brazilian monthly minimum wage in current currency units.",
+      "aliases": [
+        "salario minimo",
+        "minimum wage"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "Exchange rate - Free - United States dollar (sale)",
+      "name_pt": "Dolar americano (venda) - PTAX",
+      "category": "external_sector",
+      "unit": "c.m.u./US$",
+      "frequency": "Daily",
+      "source": "Sisbacen PTAX800",
+      "description": "US dollar / Brazilian real exchange rate, PTAX sale rate, daily.",
+      "aliases": [
+        "dolar",
+        "dólar",
+        "cambio",
+        "câmbio",
+        "usdbrl",
+        "brl",
+        "exchange rate",
+        "ptax",
+        "dolar comercial"
+      ]
+    },
+    {
+      "id": 13982,
+      "name": "International reserves - Liquidity concept - Total - daily",
+      "name_pt": "Reservas internacionais - conceito liquidez (diario)",
+      "category": "external_sector",
+      "unit": "US$ (million)",
+      "frequency": "Daily",
+      "source": "BCB-DSTAT",
+      "description": "International reserves of Brazil, liquidity concept, daily.",
+      "aliases": [
+        "reservas internacionais",
+        "reservas",
+        "international reserves",
+        "reserves"
+      ]
+    },
+    {
+      "id": 3546,
+      "name": "International reserves - Total - monthly",
+      "name_pt": "Reservas internacionais - total (mensal)",
+      "category": "external_sector",
+      "unit": "US$ (million)",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Total international reserves, end of month.",
+      "aliases": [
+        "reservas mensais"
+      ]
+    },
+    {
+      "id": 3547,
+      "name": "International reserves - Foreign currency reserves (in convertible foreign currencies) - Total",
+      "name_pt": "Reservas em moeda estrangeira",
+      "category": "external_sector",
+      "unit": "US$ (million)",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Foreign currency component of international reserves.",
+      "aliases": [
+        "reservas moeda estrangeira"
+      ]
+    },
+    {
+      "id": 3552,
+      "name": "International reserves - Gold (including gold deposits)",
+      "name_pt": "Reservas internacionais - ouro",
+      "category": "external_sector",
+      "unit": "US$ (million)",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Gold component of international reserves, in US dollars.",
+      "aliases": [
+        "reservas ouro",
+        "gold reserves"
+      ]
+    },
+    {
+      "id": 22704,
+      "name": "Trade balance - monthly - net",
+      "name_pt": "Balanca comercial - mensal",
+      "category": "external_sector",
+      "unit": "US$ (million)",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Monthly trade balance (exports minus imports), US$ million.",
+      "aliases": [
+        "balanca comercial",
+        "trade balance",
+        "saldo comercial"
+      ]
+    },
+    {
+      "id": 22705,
+      "name": "Exports - monthly - total",
+      "name_pt": "Exportacoes - mensal",
+      "category": "external_sector",
+      "unit": "US$ (million)",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Monthly exports of goods, US$ million.",
+      "aliases": [
+        "exportacoes",
+        "exports",
+        "exportacao"
+      ]
+    },
+    {
+      "id": 22706,
+      "name": "Imports - monthly - total",
+      "name_pt": "Importacoes - mensal",
+      "category": "external_sector",
+      "unit": "US$ (million)",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Monthly imports of goods, US$ million.",
+      "aliases": [
+        "importacoes",
+        "imports",
+        "importacao"
+      ]
+    },
+    {
+      "id": 22701,
+      "name": "Current account - monthly - net",
+      "name_pt": "Conta corrente - mensal",
+      "category": "external_sector",
+      "unit": "US$ (million)",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Net current account balance of the balance of payments, US$ million.",
+      "aliases": [
+        "conta corrente",
+        "current account",
+        "transacoes correntes"
+      ]
+    },
+    {
+      "id": 22863,
+      "name": "Financial account - monthly - net",
+      "name_pt": "Conta financeira - mensal",
+      "category": "external_sector",
+      "unit": "US$ (million)",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Net financial account of the balance of payments.",
+      "aliases": [
+        "conta financeira",
+        "financial account"
+      ]
+    },
+    {
+      "id": 22886,
+      "name": "Direct investment - Net incurrence of liabilities - monthly - inflows",
+      "name_pt": "Investimento direto no pais - ingressos",
+      "category": "external_sector",
+      "unit": "US$ (million)",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Foreign direct investment inflows into Brazil (net incurrence of liabilities).",
+      "aliases": [
+        "investimento estrangeiro direto",
+        "ied",
+        "fdi",
+        "foreign direct investment",
+        "investimento direto"
+      ]
+    },
+    {
+      "id": 22864,
+      "name": "Direct investment - monthly - net",
+      "name_pt": "Investimento direto - liquido",
+      "category": "external_sector",
+      "unit": "US$ (million)",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Net direct investment (assets minus liabilities).",
+      "aliases": [
+        "investimento direto liquido"
+      ]
+    },
+    {
+      "id": 22809,
+      "name": "Direct investment income - monthly - net",
+      "name_pt": "Renda de investimento direto - liquido",
+      "category": "external_sector",
+      "unit": "US$ (million)",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Net income flows of direct investment (profits, dividends, interest).",
+      "aliases": [
+        "renda investimento direto",
+        "remessa de lucros"
+      ]
+    },
+    {
+      "id": 11753,
+      "name": "Real exchange rate index (IPCA) - Jun/1994=100 - US Dollar",
+      "name_pt": "Indice de cambio real (IPCA) - dolar",
+      "category": "external_sector",
+      "unit": "Index",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Real effective exchange rate index vs. the US dollar, deflated by IPCA.",
+      "aliases": [
+        "cambio real",
+        "real exchange rate"
+      ]
+    },
+    {
+      "id": 11758,
+      "name": "Real effective exchange rate index (IPA-DI) - Jun/1994=100 - US Dollar",
+      "name_pt": "Indice de cambio efetivo real (IPA-DI)",
+      "category": "external_sector",
+      "unit": "Index",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Real effective exchange rate index (IPA-DI) for the US dollar.",
+      "aliases": [
+        "cambio efetivo real"
+      ]
+    },
+    {
+      "id": 21535,
+      "name": "Gross External Debt - By Currency - US Dollar",
+      "name_pt": "Divida externa bruta - por moeda - dolar",
+      "category": "external_sector",
+      "unit": "US$ (million)",
+      "frequency": "Quarterly",
+      "source": "BCB-DSTAT",
+      "description": "Gross external debt denominated in US dollars.",
+      "aliases": [
+        "divida externa",
+        "external debt"
+      ]
+    },
+    {
+      "id": 3584,
+      "name": "Registered external debt - Distribution by currency - US dollar",
+      "name_pt": "Divida externa registrada - dolar",
+      "category": "external_sector",
+      "unit": "US$ (million)",
+      "frequency": "Quarterly",
+      "source": "BCB-DSTAT",
+      "description": "Registered external debt by currency (US dollar).",
+      "aliases": [
+        "divida externa registrada"
+      ]
+    },
+    {
+      "id": 29336,
+      "name": "International assets of domestic banks - US Dollar",
+      "name_pt": "Ativos internacionais dos bancos - dolar",
+      "category": "external_sector",
+      "unit": "R$ (million)",
+      "frequency": "Quarterly",
+      "source": "BCB-DSTAT",
+      "description": "International assets of domestic banks in US dollars.",
+      "aliases": [
+        "ativos internacionais bancos"
+      ]
+    },
+    {
+      "id": 29372,
+      "name": "International liabilities of domestic banks - US Dollar",
+      "name_pt": "Passivos internacionais dos bancos - dolar",
+      "category": "external_sector",
+      "unit": "R$ (million)",
+      "frequency": "Quarterly",
+      "source": "BCB-DSTAT",
+      "description": "International liabilities of domestic banks in US dollars.",
+      "aliases": [
+        "passivos internacionais bancos"
+      ]
+    },
+    {
+      "id": 13962,
+      "name": "Orders with clients in the commercial sector - exports - total",
+      "name_pt": "Encomendas de exportacao",
+      "category": "external_sector",
+      "unit": "US$ (million)",
+      "frequency": "Daily",
+      "source": "BCB-DSTAT",
+      "description": "Export orders placed with the commercial sector.",
+      "aliases": [
+        "encomendas exportacao"
+      ]
+    },
+    {
+      "id": 4649,
+      "name": "PSBR - Current monthly flows - Primary result - Total - Consolidated public sector",
+      "name_pt": "Resultado primario do setor publico consolidado",
+      "category": "fiscal",
+      "unit": "R$ (million)",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Primary fiscal result of the consolidated public sector, R$ million.",
+      "aliases": [
+        "resultado primario",
+        "primary result",
+        "superavit primario"
+      ]
+    },
+    {
+      "id": 5078,
+      "name": "PSBR - Flows accumulated in 12 months - Primary result - Total - Consolidated public sector",
+      "name_pt": "Resultado primario acumulado em 12 meses",
+      "category": "fiscal",
+      "unit": "R$ (million)",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Primary result of the public sector accumulated over 12 months.",
+      "aliases": [
+        "resultado primario 12 meses"
+      ]
+    },
+    {
+      "id": 5364,
+      "name": "PBSR (%GDP) - Current monthly flows - Primary result - Total - Consolidated public sector",
+      "name_pt": "Resultado primario (% do PIB) - mensal",
+      "category": "fiscal",
+      "unit": "%",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Monthly primary result of the public sector as a share of GDP.",
+      "aliases": [
+        "resultado primario pib"
+      ]
+    },
+    {
+      "id": 5507,
+      "name": "PBSR (%GDP) - Flows accumulated in the year - Primary result - Total - Consolidated public sector",
+      "name_pt": "Resultado primario (% do PIB) - acumulado no ano",
+      "category": "fiscal",
+      "unit": "%",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Primary result accumulated in the year as a share of GDP.",
+      "aliases": [
+        "resultado primario ano pib"
+      ]
+    },
+    {
+      "id": 4513,
+      "name": "Net public debt (% GDP) - Total - Consolidated public sector",
+      "name_pt": "Divida liquida do setor publico (% do PIB)",
+      "category": "fiscal",
+      "unit": "%",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Net public sector debt as a percentage of GDP.",
+      "aliases": [
+        "divida liquida",
+        "net debt",
+        "divida liquida pib",
+        "dlsp"
+      ]
+    },
+    {
+      "id": 4478,
+      "name": "Net public debt - Balances in reais (million) - Total - Consolidated public sector",
+      "name_pt": "Divida liquida do setor publico (R$ milhoes)",
+      "category": "fiscal",
+      "unit": "R$ (million)",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Net public sector debt stock, R$ million.",
+      "aliases": [
+        "divida liquida valor"
+      ]
+    },
+    {
+      "id": 13762,
+      "name": "Gross general government debt (% GDP) - Method used since 2008",
+      "name_pt": "Divida bruta do governo geral (% do PIB)",
+      "category": "fiscal",
+      "unit": "%",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Gross general government debt as a percentage of GDP (current methodology).",
+      "aliases": [
+        "divida bruta",
+        "gross debt",
+        "divida bruta pib",
+        "dbgg"
+      ]
+    },
+    {
+      "id": 13761,
+      "name": "Gross general government debt - Balances in reais (million) - Method used since 2008",
+      "name_pt": "Divida bruta do governo geral (R$ milhoes)",
+      "category": "fiscal",
+      "unit": "R$ (million)",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Gross general government debt stock, R$ million.",
+      "aliases": [
+        "divida bruta valor"
+      ]
+    },
+    {
+      "id": 5288,
+      "name": "PBSR (%GDP) - Current monthly flows - Nominal result - Total - Federal Government and Banco Central",
+      "name_pt": "Resultado nominal (% do PIB)",
+      "category": "fiscal",
+      "unit": "%",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Nominal fiscal result as a share of GDP.",
+      "aliases": [
+        "resultado nominal",
+        "nominal result",
+        "deficit nominal"
+      ]
+    },
+    {
+      "id": 7544,
+      "name": "Primary Result of the Central Government - Total Revenue",
+      "name_pt": "Receita total do governo central",
+      "category": "fiscal",
+      "unit": "c.m.u. (million)",
+      "frequency": "Monthly",
+      "source": "MF-STN",
+      "description": "Total revenue of the central government.",
+      "aliases": [
+        "receita governo central",
+        "receita total"
+      ]
+    },
+    {
+      "id": 7547,
+      "name": "Primary Result of the Central Government - Total Expenditure",
+      "name_pt": "Despesa total do governo central",
+      "category": "fiscal",
+      "unit": "c.m.u. (million)",
+      "frequency": "Monthly",
+      "source": "MF-STN",
+      "description": "Total expenditure of the central government.",
+      "aliases": [
+        "despesa governo central",
+        "gasto publico"
+      ]
+    },
+    {
+      "id": 7549,
+      "name": "Primary Result of the Central Government - Transfers by Revenue Sharing",
+      "name_pt": "Transferencias por reparticao de receita",
+      "category": "fiscal",
+      "unit": "c.m.u. (million)",
+      "frequency": "Monthly",
+      "source": "MF-STN",
+      "description": "Transfers to states and municipalities by revenue sharing.",
+      "aliases": [
+        "transferencias constitucionais"
+      ]
+    },
+    {
+      "id": 7552,
+      "name": "Primary Result of the Central Government - Expenditures - Social securities benefits",
+      "name_pt": "Beneficios previdenciarios",
+      "category": "fiscal",
+      "unit": "c.m.u. (million)",
+      "frequency": "Monthly",
+      "source": "MF-STN",
+      "description": "Social security benefit expenditures of the central government.",
+      "aliases": [
+        "previdencia",
+        "beneficios previdenciarios",
+        "social security"
+      ]
+    },
+    {
+      "id": 7553,
+      "name": "Primary Result of the Central Government - Expenditures - Payroll and Social Charges",
+      "name_pt": "Pessoal e encargos sociais",
+      "category": "fiscal",
+      "unit": "c.m.u. (million)",
+      "frequency": "Monthly",
+      "source": "MF-STN",
+      "description": "Payroll and social charges of the central government.",
+      "aliases": [
+        "pessoal",
+        "folha de pagamento"
+      ]
+    },
+    {
+      "id": 24391,
+      "name": "Primary Result of the Central Government - Revenues - Collected by the Federal Revenue Office",
+      "name_pt": "Receitas coletadas pela Receita Federal",
+      "category": "fiscal",
+      "unit": "c.m.u. (million)",
+      "frequency": "Monthly",
+      "source": "MF-STN",
+      "description": "Central government revenues collected by the Federal Revenue Office.",
+      "aliases": [
+        "receita federal",
+        "arrecadacao federal"
+      ]
+    },
+    {
+      "id": 24392,
+      "name": "Primary Result of the Central Government - Revenues - Not Collected by the Federal Revenue Office",
+      "name_pt": "Receitas nao coletadas pela Receita Federal",
+      "category": "fiscal",
+      "unit": "c.m.u. (million)",
+      "frequency": "Monthly",
+      "source": "MF-STN",
+      "description": "Central government revenues not collected by the Federal Revenue Office.",
+      "aliases": [
+        "outras receitas governo central"
+      ]
+    },
+    {
+      "id": 20539,
+      "name": "Credit operations outstanding - Total",
+      "name_pt": "Saldo da carteira de credito - total",
+      "category": "credit",
+      "unit": "R$ (million)",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Total outstanding credit operations of the National Financial System, R$ million.",
+      "aliases": [
+        "credito",
+        "credito total",
+        "estoque de credito",
+        "credit outstanding",
+        "saldo de credito"
+      ]
+    },
+    {
+      "id": 2007,
+      "name": "Credit operations outstanding of financial institutions under public control - Total",
+      "name_pt": "Credito - bancos publicos",
+      "category": "credit",
+      "unit": "R$ (million)",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Outstanding credit of public-controlled financial institutions.",
+      "aliases": [
+        "credito bancos publicos"
+      ]
+    },
+    {
+      "id": 2043,
+      "name": "Credit operations outstanding of financial institutions under private control - Total",
+      "name_pt": "Credito - bancos privados",
+      "category": "credit",
+      "unit": "R$ (million)",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Outstanding credit of private-controlled financial institutions.",
+      "aliases": [
+        "credito bancos privados"
+      ]
+    },
+    {
+      "id": 12106,
+      "name": "Credit operations outstanding of financial institutions under national private control - Total",
+      "name_pt": "Credito - bancos privados nacionais",
+      "category": "credit",
+      "unit": "R$ (million)",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Outstanding credit of nationally controlled private banks.",
+      "aliases": [
+        "credito bancos nacionais"
+      ]
+    },
+    {
+      "id": 12150,
+      "name": "Credit operations outstanding of financial institutions under foreign control - Total",
+      "name_pt": "Credito - bancos estrangeiros",
+      "category": "credit",
+      "unit": "R$ (million)",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Outstanding credit of foreign-controlled banks.",
+      "aliases": [
+        "credito bancos estrangeiros"
+      ]
+    },
+    {
+      "id": 21082,
+      "name": "Default rate of National Financial System credit operations - Total",
+      "name_pt": "Taxa de inadimplencia - total",
+      "category": "credit",
+      "unit": "%",
+      "frequency": "Monthly",
+      "source": "BCB",
+      "description": "Delinquency rate (over 90 days) of the National Financial System credit portfolio.",
+      "aliases": [
+        "inadimplencia",
+        "default rate",
+        "default",
+        "atraso"
+      ]
+    },
+    {
+      "id": 20714,
+      "name": "Average interest rate of new credit operations - Total",
+      "name_pt": "Taxa media de juros das novas operacoes de credito",
+      "category": "credit",
+      "unit": "% p.y.",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Average interest rate on new credit operations, annualized.",
+      "aliases": [
+        "taxa de juros credito",
+        "juros medio",
+        "lending rate",
+        "average interest rate"
+      ]
+    },
+    {
+      "id": 20715,
+      "name": "Average interest rate of new credit operations - Non-financial corporations - Total",
+      "name_pt": "Taxa media de juros - empresas",
+      "category": "credit",
+      "unit": "% p.y.",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Average interest rate on new credit for non-financial corporations.",
+      "aliases": [
+        "juros empresas",
+        "corporate lending rate"
+      ]
+    },
+    {
+      "id": 20716,
+      "name": "Average interest rate of new credit operations - Households - Total",
+      "name_pt": "Taxa media de juros - familias",
+      "category": "credit",
+      "unit": "% p.y.",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Average interest rate on new credit for households.",
+      "aliases": [
+        "juros familias",
+        "household lending rate",
+        "juros pessoa fisica"
+      ]
+    },
+    {
+      "id": 20783,
+      "name": "Average spread of new credit operations - Total",
+      "name_pt": "Spread medio das novas operacoes de credito",
+      "category": "credit",
+      "unit": "p.p.",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Average spread (banking spread) on new credit operations.",
+      "aliases": [
+        "spread",
+        "spread bancario",
+        "spread medio"
+      ]
+    },
+    {
+      "id": 20784,
+      "name": "Average spread of new credit operations - Non-financial corporations - Total",
+      "name_pt": "Spread medio - empresas",
+      "category": "credit",
+      "unit": "p.p.",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Average spread on new credit for non-financial corporations.",
+      "aliases": [
+        "spread empresas"
+      ]
+    },
+    {
+      "id": 27788,
+      "name": "Money supply - M1 (working day balance average) - New",
+      "name_pt": "Meios de pagamento - M1 (media dos dias uteis)",
+      "category": "monetary",
+      "unit": "c.m.u. (thousand)",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "M1 money supply, average of working-day balances (current methodology).",
+      "aliases": [
+        "m1",
+        "meios de pagamento",
+        "money supply m1"
+      ]
+    },
+    {
+      "id": 27791,
+      "name": "Money supply - M1 (end-of-period balance) - New",
+      "name_pt": "M1 - saldo no fim do periodo",
+      "category": "monetary",
+      "unit": "c.m.u. (thousand)",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "M1 money supply, end-of-period balance (current methodology).",
+      "aliases": [
+        "m1 fim de periodo"
+      ]
+    },
+    {
+      "id": 27841,
+      "name": "Money supply - M1 (end-of-period balance) - New - seasonally adjusted",
+      "name_pt": "M1 - ajuste sazonal",
+      "category": "monetary",
+      "unit": "c.m.u. (thousand)",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "M1 end-of-period balance, seasonally adjusted.",
+      "aliases": [
+        "m1 ajustado"
+      ]
+    },
+    {
+      "id": 27785,
+      "name": "Money supply - M1 (daily balance) - New",
+      "name_pt": "M1 - saldo diario",
+      "category": "monetary",
+      "unit": "c.m.u. (thousand)",
+      "frequency": "Daily",
+      "source": "BCB-DSTAT",
+      "description": "M1 money supply, daily balances.",
+      "aliases": [
+        "m1 diario"
+      ]
+    },
+    {
+      "id": 1788,
+      "name": "Monetary base - Monetary base (end-of-period balance)",
+      "name_pt": "Base monetaria - saldo no fim do periodo",
+      "category": "monetary",
+      "unit": "c.m.u. (thousand)",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Monetary base, end-of-period balance.",
+      "aliases": [
+        "base monetaria",
+        "monetary base"
+      ]
+    },
+    {
+      "id": 1785,
+      "name": "Monetary base - Monetary base (working day balance average)",
+      "name_pt": "Base monetaria - media dos dias uteis",
+      "category": "monetary",
+      "unit": "c.m.u. (thousand)",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Monetary base, average of working-day balances.",
+      "aliases": [
+        "base monetaria media"
+      ]
+    },
+    {
+      "id": 1782,
+      "name": "Monetary base - Monetary base (daily balance)",
+      "name_pt": "Base monetaria - saldo diario",
+      "category": "monetary",
+      "unit": "c.m.u. (thousand)",
+      "frequency": "Daily",
+      "source": "BCB-DSTAT",
+      "description": "Monetary base, daily balances.",
+      "aliases": [
+        "base monetaria diaria"
+      ]
+    },
+    {
+      "id": 1835,
+      "name": "Broad money supply - Savings deposits (end-of-period balance)",
+      "name_pt": "Depositos de poupanca - saldo",
+      "category": "monetary",
+      "unit": "c.m.u. (thousand)",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "Savings deposits, end-of-period balance.",
+      "aliases": [
+        "poupanca",
+        "depositos de poupanca",
+        "savings"
+      ]
+    },
+    {
+      "id": 1827,
+      "name": "Money supply - M1 (end-of-period balance)",
+      "name_pt": "M1 - metodologia antiga",
+      "category": "monetary",
+      "unit": "c.m.u. (thousand)",
+      "frequency": "Monthly",
+      "source": "BCB-DSTAT",
+      "description": "M1 end-of-period balance, previous methodology (series ended in Jun/2018).",
+      "aliases": [
+        "m1 antigo"
+      ]
+    },
+    {
+      "id": 1821,
+      "name": "Money supply - M1 (daily balance)",
+      "name_pt": "M1 diario - metodologia antiga",
+      "category": "monetary",
+      "unit": "c.m.u. (thousand)",
+      "frequency": "Daily",
+      "source": "BCB-DSTAT",
+      "description": "M1 daily balances, previous methodology (series ended in Jun/2018).",
+      "aliases": [
+        "m1 diario antigo"
+      ]
+    },
+    {
+      "id": 4393,
+      "name": "Consumer confidence index",
+      "name_pt": "Indice de confianca do consumidor",
+      "category": "confidence",
+      "unit": "Index",
+      "frequency": "Monthly",
+      "source": "Fecomercio",
+      "description": "Consumer confidence index (Fecomercio).",
+      "aliases": [
+        "confianca do consumidor",
+        "icc",
+        "consumer confidence"
+      ]
+    },
+    {
+      "id": 4395,
+      "name": "Future expectations index",
+      "name_pt": "Indice de expectativas futuras",
+      "category": "confidence",
+      "unit": "Index",
+      "frequency": "Monthly",
+      "source": "Fecomercio",
+      "description": "Future expectations component of the consumer confidence survey.",
+      "aliases": [
+        "expectativas futuras",
+        "expectations"
+      ]
+    },
+    {
+      "id": 7341,
+      "name": "Business confidence index - General",
+      "name_pt": "Indice de confianca do empresario industrial",
+      "category": "confidence",
+      "unit": "Index",
+      "frequency": "Quarterly",
+      "source": "CNI",
+      "description": "Industrial business confidence index (CNI), general.",
+      "aliases": [
+        "confianca do empresario",
+        "business confidence",
+        "icei"
+      ]
+    },
+    {
+      "id": 7343,
+      "name": "Business confidence index - Expectations",
+      "name_pt": "Confianca do empresario - expectativas",
+      "category": "confidence",
+      "unit": "Index",
+      "frequency": "Quarterly",
+      "source": "CNI",
+      "description": "Business confidence index, expectations component.",
+      "aliases": [
+        "expectativas empresario"
+      ]
+    },
+    {
+      "id": 7832,
+      "name": "Ibovespa - monthly percent change",
+      "name_pt": "Ibovespa - variacao mensal",
+      "category": "markets",
+      "unit": "%",
+      "frequency": "Monthly",
+      "source": "BM&FBOVESPA",
+      "description": "Monthly percentage change of the Ibovespa index (series ended in Aug/2019).",
+      "aliases": [
+        "ibovespa",
+        "bolsa",
+        "stock market",
+        "bovespa"
+      ]
+    },
+    {
+      "id": 21340,
+      "name": "Residential Real Estate Collateral Value Index",
+      "name_pt": "Indice de valor de garantia imobiliaria residencial",
+      "category": "markets",
+      "unit": "Index",
+      "frequency": "Monthly",
+      "source": "BCB-Desig",
+      "description": "Index of residential real estate collateral values used in mortgage lending.",
+      "aliases": [
+        "garantia imobiliaria",
+        "imoveis",
+        "real estate"
+      ]
+    },
+    {
+      "id": 25419,
+      "name": "Median of Residential Real Estate Collateral Value",
+      "name_pt": "Valor mediano de garantia imobiliaria residencial",
+      "category": "markets",
+      "unit": "R$",
+      "frequency": "Monthly",
+      "source": "BCB-Desig",
+      "description": "Median collateral value of residential real estate.",
+      "aliases": [
+        "valor imovel",
+        "garantia mediana"
+      ]
+    },
+    {
+      "id": 20048,
+      "name": "Commodity Index - Brazil (until Nov/2017)",
+      "name_pt": "Indice de commodities - Brasil (IC-Br)",
+      "category": "commodities",
+      "unit": "Index",
+      "frequency": "Monthly",
+      "source": "BCB-Depec",
+      "description": "BCB commodity price index for Brazil (series ended in Nov/2017).",
+      "aliases": [
+        "commodities",
+        "ic-br",
+        "indice de commodities"
+      ]
+    },
+    {
+      "id": 20206,
+      "name": "Exports (Fob) - Crude Oil",
+      "name_pt": "Exportacoes - petroleo bruto",
+      "category": "commodities",
+      "unit": "US$",
+      "frequency": "Monthly",
+      "source": "MDIC/Secex",
+      "description": "Brazilian exports of crude oil, FOB value.",
+      "aliases": [
+        "exportacao petroleo"
+      ]
+    },
+    {
+      "id": 2959,
+      "name": "Exports (Fob) - Oil-cake and other residues from soybeans",
+      "name_pt": "Exportacoes - farelo de soja",
+      "category": "commodities",
+      "unit": "US$",
+      "frequency": "Monthly",
+      "source": "MDIC/Secex",
+      "description": "Brazilian exports of soybean meal.",
+      "aliases": [
+        "farelo de soja",
+        "soybean meal"
+      ]
+    },
+    {
+      "id": 2992,
+      "name": "Exports (Fob) - Soybean oil, crude",
+      "name_pt": "Exportacoes - oleo de soja",
+      "category": "commodities",
+      "unit": "US$",
+      "frequency": "Monthly",
+      "source": "MDIC/Secex",
+      "description": "Brazilian exports of crude soybean oil.",
+      "aliases": [
+        "oleo de soja"
+      ]
+    },
+    {
+      "id": 2950,
+      "name": "Exports (Fob) - Coffee, not roasted",
+      "name_pt": "Exportacoes - cafe nao torrado",
+      "category": "commodities",
+      "unit": "US$",
+      "frequency": "Monthly",
+      "source": "MDIC/Secex",
+      "description": "Brazilian exports of green coffee.",
+      "aliases": [
+        "cafe",
+        "coffee exports"
+      ]
+    },
+    {
+      "id": 2952,
+      "name": "Exports (Fob) - Meat of bovine animals, fresh, chilled or frozen",
+      "name_pt": "Exportacoes - carne bovina",
+      "category": "commodities",
+      "unit": "US$",
+      "frequency": "Monthly",
+      "source": "MDIC/Secex",
+      "description": "Brazilian exports of bovine meat.",
+      "aliases": [
+        "carne bovina",
+        "beef exports",
+        "boi"
+      ]
+    },
+    {
+      "id": 2953,
+      "name": "Exports (Fob) - Meat of swine, fresh, chilled or frozen",
+      "name_pt": "Exportacoes - carne suina",
+      "category": "commodities",
+      "unit": "US$",
+      "frequency": "Monthly",
+      "source": "MDIC/Secex",
+      "description": "Brazilian exports of pork.",
+      "aliases": [
+        "carne suina",
+        "pork exports"
+      ]
+    },
+    {
+      "id": 2954,
+      "name": "Exports (Fob) - Meat and edible offal of chicken, fresh, chilled or frozen",
+      "name_pt": "Exportacoes - carne de frango",
+      "category": "commodities",
+      "unit": "US$",
+      "frequency": "Monthly",
+      "source": "MDIC/Secex",
+      "description": "Brazilian exports of chicken meat.",
+      "aliases": [
+        "frango",
+        "chicken exports"
+      ]
+    },
+    {
+      "id": 1389,
+      "name": "Petroleum derivatives production - Crude oil",
+      "name_pt": "Producao de petroleo bruto",
+      "category": "energy",
+      "unit": "Barrels/day (thousand)",
+      "frequency": "Monthly",
+      "source": "ANP",
+      "description": "Crude oil production in Brazil, thousand barrels per day.",
+      "aliases": [
+        "producao de petroleo",
+        "oil production",
+        "petroleo"
+      ]
+    },
+    {
+      "id": 1393,
+      "name": "Petroleum derivatives consumption - Gasoline",
+      "name_pt": "Consumo de gasolina",
+      "category": "energy",
+      "unit": "Barrels/day (thousand)",
+      "frequency": "Monthly",
+      "source": "ANP",
+      "description": "Gasoline consumption in Brazil.",
+      "aliases": [
+        "gasolina",
+        "gasoline"
+      ]
+    },
+    {
+      "id": 1394,
+      "name": "Petroleum derivatives consumption - GLP",
+      "name_pt": "Consumo de GLP",
+      "category": "energy",
+      "unit": "Barrels/day (thousand)",
+      "frequency": "Monthly",
+      "source": "ANP",
+      "description": "Liquefied petroleum gas (LPG) consumption.",
+      "aliases": [
+        "glp",
+        "lpg",
+        "gas de cozinha"
+      ]
+    },
+    {
+      "id": 1395,
+      "name": "Petroleum derivatives consumption - Fuel oil",
+      "name_pt": "Consumo de oleo combustivel",
+      "category": "energy",
+      "unit": "Barrels/day (thousand)",
+      "frequency": "Monthly",
+      "source": "ANP",
+      "description": "Fuel oil consumption.",
+      "aliases": [
+        "oleo combustivel",
+        "fuel oil"
+      ]
+    },
+    {
+      "id": 1396,
+      "name": "Petroleum derivatives consumption - Diesel oil",
+      "name_pt": "Consumo de diesel",
+      "category": "energy",
+      "unit": "Barrels/day (thousand)",
+      "frequency": "Monthly",
+      "source": "ANP",
+      "description": "Diesel oil consumption.",
+      "aliases": [
+        "diesel"
+      ]
+    },
+    {
+      "id": 1398,
+      "name": "Petroleum derivatives consumption - Total derivatives",
+      "name_pt": "Consumo total de derivados de petroleo",
+      "category": "energy",
+      "unit": "Barrels/day (thousand)",
+      "frequency": "Monthly",
+      "source": "ANP",
+      "description": "Total consumption of petroleum derivatives.",
+      "aliases": [
+        "derivados de petroleo"
+      ]
+    },
+    {
+      "id": 1399,
+      "name": "Fuel alcohol consumption - Hydrous alcohol",
+      "name_pt": "Consumo de etanol hidratado",
+      "category": "energy",
+      "unit": "Barrels/day (thousand)",
+      "frequency": "Monthly",
+      "source": "ANP",
+      "description": "Hydrous ethanol consumption (fuel alcohol).",
+      "aliases": [
+        "etanol",
+        "alcool hidratado",
+        "ethanol"
+      ]
+    },
+    {
+      "id": 1400,
+      "name": "Fuel alcohol consumption - Anhydrous alcohol",
+      "name_pt": "Consumo de etanol anidro",
+      "category": "energy",
+      "unit": "Barrels/day (thousand)",
+      "frequency": "Monthly",
+      "source": "ANP",
+      "description": "Anhydrous ethanol consumption (blended into gasoline).",
+      "aliases": [
+        "alcool anidro"
+      ]
+    },
+    {
+      "id": 1402,
+      "name": "Electric energy consumption - Brazil - commercial",
+      "name_pt": "Consumo de energia eletrica - comercial",
+      "category": "energy",
+      "unit": "GWh",
+      "frequency": "Monthly",
+      "source": "Eletrobras",
+      "description": "Commercial electricity consumption in Brazil.",
+      "aliases": [
+        "energia comercial"
+      ]
+    },
+    {
+      "id": 1403,
+      "name": "Electric energy consumption - Brazil - residential",
+      "name_pt": "Consumo de energia eletrica - residencial",
+      "category": "energy",
+      "unit": "GWh",
+      "frequency": "Monthly",
+      "source": "Eletrobras",
+      "description": "Residential electricity consumption in Brazil.",
+      "aliases": [
+        "energia residencial"
+      ]
+    }
+  ]
+}
