@@ -20,9 +20,6 @@ pip install bcb-mcp
 uvx bcb-mcp --stdio
 ```
 
-> **Note:** if PyPI returns "not found", the release is not published yet — use
-> the source install below (or `uvx --from git+https://github.com/msperlin/bcb-mcp bcb-mcp`).
-
 From source:
 
 ```bash
