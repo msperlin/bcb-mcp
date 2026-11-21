@@ -19,6 +19,8 @@ class FakeClient:
         self.data = data or {}
         self.calls: list[tuple[int, dt.date, dt.date]] = []
         self.catalog_calls: list[str] = []
+        self.focus_calls: list[dict[str, Any]] = []
+        self.focus_data: list[dict[str, Any]] = []
         self.closed = False
 
     async def fetch_series(
@@ -46,6 +48,10 @@ class FakeClient:
                 "source": "TEST",
             }
         ][:max_results]
+
+    async def fetch_focus_expectations(self, **kwargs: Any) -> list[dict[str, Any]]:
+        self.focus_calls.append(kwargs)
+        return list(self.focus_data)
 
     async def close(self) -> None:
         self.closed = True

@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.2.0 (2026-11-21)
+
+New analytical tools, Boletim Focus market expectations, and engine-level hardening.
+
+- Added `get_focus_expectations` backed by BCB's Olinda OData API (`annual`,
+  `monthly`, `quarterly`, `inflation_12m`, and `selic_meetings` horizons), with
+  English/Portuguese indicator aliases and `latest_by_reference` summaries.
+- Added `get_macro_snapshot` for one-call Brazilian macro dashboards across
+  curated presets (`overview`, `inflation`, `rates_and_fx`, `activity`,
+  `fiscal`, `external`).
+- Added optional `resample` (`monthly`, `quarterly`, `annual`), `agg` (`last`,
+  `mean`, `sum`, `compound`), and `transform` (`diff`, `pct_change`, `yoy`,
+  `acc12m`, `index100`) parameters to `get_series`.
+- Enriched `get_series_stats` with `prev_obs`/`prev_value`, period-over-period
+  changes, YoY values and changes, `median`, `std`, `min_date`, and `max_date`.
+- Made tail refresh frequency-aware (3d daily, 14d weekly, 60d monthly, 120d
+  quarterly, 400d annual) so newly released monthly/quarterly observations are
+  never missed.
+- Hardened `query_cache` with engine-level DuckDB sandboxing
+  (`allowed_directories`, `enable_external_access = false`,
+  `lock_configuration = true`).
+- Parallelized 10-year chunk downloads in `BCBClient.fetch_series` and switched
+  `__version__` to read from `importlib.metadata`.
+
 ## 0.1.1 (2026-11-10)
 
 Fixes found while reviewing the first release.

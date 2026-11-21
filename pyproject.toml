@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "bcb-mcp"
-version = "0.1.1"
+version = "0.2.0"
 description = "MCP server for Brazilian Central Bank (BCB-SGS) time series, with a curated series dictionary and a parquet/DuckDB cache"
 readme = "README.md"
 license = "MIT"

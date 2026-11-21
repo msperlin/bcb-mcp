@@ -401,6 +401,12 @@ class ParquetCache:
         con = duckdb.connect()
         try:
             self._register_views(con)
+            # Engine-level sandbox: restrict file access strictly to the cache
+            # directory and lock configuration so unlisted DuckDB functions
+            # cannot read arbitrary host files or remote URLs.
+            con.execute(f"SET allowed_directories = ['{_esc(str(self.root))}']")
+            con.execute("SET enable_external_access = false")
+            con.execute("SET lock_configuration = true")
             wrapped = f"SELECT * FROM ({statement}) AS _q LIMIT {int(limit)}"
             cursor = con.execute(wrapped)
             columns = [d[0] for d in cursor.description]

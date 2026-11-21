@@ -15,6 +15,7 @@ import html as html_lib
 import logging
 import re
 import time
+import urllib.parse
 from typing import Any
 
 import httpx
@@ -25,11 +26,20 @@ from .config import (
     MAX_DAYS_PER_REQUEST,
     MAX_RETRIES,
     MIN_REQUEST_INTERVAL,
+    OLINDA_EXPECTATIVAS_URL,
     SGS_DATA_URL,
     SGS_SEARCH_HOME,
     SGS_SEARCH_URL,
     USER_AGENT,
 )
+
+FOCUS_ENDPOINTS: dict[str, str] = {
+    "annual": "ExpectativasMercadoAnuais",
+    "monthly": "ExpectativaMercadoMensais",
+    "quarterly": "ExpectativasMercadoTrimestrais",
+    "inflation_12m": "ExpectativasMercadoInflacao12Meses",
+    "selic_meetings": "ExpectativasMercadoSelic",
+}
 
 logger = logging.getLogger("bcb_mcp.client")
 
@@ -152,13 +162,16 @@ class BCBClient:
     ) -> list[tuple[dt.date, float | None]]:
         """Download a series, splitting long spans into API-friendly chunks."""
         chunks = split_date_range(first_date, last_date)
+        chunk_results = await asyncio.gather(
+            *(self.fetch_series_range(series_id, start, end) for start, end in chunks)
+        )
         collected: dict[dt.date, float | None] = {}
-        for start, end in chunks:
-            for ref_date, value in await self.fetch_series_range(series_id, start, end):
+        for rows in chunk_results:
+            for ref_date, value in rows:
                 collected[ref_date] = value
         return sorted(collected.items())
 
-    async def _get_json(self, url: str, params: dict[str, Any]) -> Any:
+    async def _get_json(self, url: str, params: dict[str, Any] | None = None) -> Any:
         last_error: Exception | None = None
         for attempt in range(1, self.max_retries + 1):
             try:
@@ -185,6 +198,60 @@ class BCBClient:
                 logger.warning("request failed (%s); retrying in %.1fs", exc, wait)
                 await asyncio.sleep(wait)
         raise BCBError(f"failed to fetch {url}: {last_error}")
+
+    # -- Olinda Focus market expectations (OData) ----------------------------
+    async def fetch_focus_expectations(
+        self,
+        *,
+        horizon: str = "annual",
+        indicator: str | None = None,
+        first_date: dt.date | None = None,
+        last_date: dt.date | None = None,
+        reference_period: str | None = None,
+        base_calculo: int = 0,
+        smoothed: str | None = None,
+        top: int = 500,
+    ) -> list[dict[str, Any]]:
+        """Query the BCB Olinda OData API for Boletim Focus market expectations."""
+        entity = FOCUS_ENDPOINTS.get(horizon)
+        if entity is None:
+            raise ValueError(
+                f"Unknown Focus horizon {horizon!r}; expected one of {sorted(FOCUS_ENDPOINTS)}."
+            )
+
+        filters: list[str] = []
+        if indicator:
+            escaped = indicator.replace("'", "''")
+            filters.append(f"Indicador eq '{escaped}'")
+        if first_date:
+            filters.append(f"Data ge '{first_date.isoformat()}'")
+        if last_date:
+            filters.append(f"Data le '{last_date.isoformat()}'")
+        if reference_period:
+            escaped_ref = reference_period.replace("'", "''")
+            field = "Reuniao" if horizon == "selic_meetings" else "DataReferencia"
+            if horizon != "inflation_12m":
+                filters.append(f"{field} eq '{escaped_ref}'")
+        if horizon == "inflation_12m" and smoothed in ("S", "N"):
+            filters.append(f"Suavizada eq '{smoothed}'")
+        if base_calculo in (0, 1):
+            filters.append(f"baseCalculo eq {int(base_calculo)}")
+
+        query_parts: list[tuple[str, str]] = [
+            ("$format", "json"),
+            ("$orderby", "Data desc"),
+            ("$top", str(max(1, min(int(top), 5000)))),
+        ]
+        if filters:
+            query_parts.append(("$filter", " and ".join(filters)))
+
+        # Olinda OData rejects '+' for spaces in $orderby/$filter; use %20.
+        encoded = urllib.parse.urlencode(query_parts, quote_via=urllib.parse.quote)
+        url = f"{OLINDA_EXPECTATIVAS_URL}/{entity}?{encoded}"
+        payload = await self._get_json(url)
+        if not isinstance(payload, dict) or not isinstance(payload.get("value"), list):
+            raise BCBError(f"Olinda {entity}: unexpected response payload")
+        return payload["value"]
 
     # -- catalog search ------------------------------------------------------
     async def search_catalog(self, text: str, max_results: int = 50) -> list[dict[str, Any]]:

@@ -175,6 +175,13 @@ def test_query_ignores_keywords_inside_literals(cache: ParquetCache) -> None:
     ]
 
 
+def test_query_sandboxes_external_file_access(cache: ParquetCache) -> None:
+    import duckdb
+
+    with pytest.raises(duckdb.PermissionException):
+        cache.query("SELECT * FROM read_ndjson('/etc/passwd')")
+
+
 def test_query_enforces_limit(cache: ParquetCache) -> None:
     cache.merge_series(
         11,

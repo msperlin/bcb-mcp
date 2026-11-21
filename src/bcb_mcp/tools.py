@@ -149,6 +149,35 @@ def register_tools(mcp: FastMCP, service: SeriesService) -> None:
                 )
             ),
         ] = None,
+        resample: Annotated[
+            Literal["monthly", "quarterly", "annual"] | None,
+            Field(
+                description=(
+                    "Optional frequency resampling ('monthly', 'quarterly', 'annual') so daily "
+                    "and monthly series can be aligned directly without writing SQL."
+                )
+            ),
+        ] = None,
+        agg: Annotated[
+            Literal["last", "mean", "sum", "compound"],
+            Field(
+                description=(
+                    "Aggregation used with `resample`: 'last' (default, end-of-period), "
+                    "'mean', 'sum', or 'compound' (compounds percentage rates like daily Selic/monthly IPCA)."
+                )
+            ),
+        ] = "last",
+        transform: Annotated[
+            Literal["diff", "pct_change", "yoy", "acc12m", "index100"] | None,
+            Field(
+                description=(
+                    "Optional derived transformation applied after optional resampling: "
+                    "'diff' (period difference), 'pct_change' (period % change), 'yoy' "
+                    "(year-over-year % change), 'acc12m' (rolling 12-period compounded % rate), "
+                    "or 'index100' (rebase first observation to 100)."
+                )
+            ),
+        ] = None,
     ) -> dict[str, Any]:
         """Download BCB-SGS time series (the analogue of GetBCBData::gbcbd_get_series).
 
@@ -169,6 +198,9 @@ def register_tools(mcp: FastMCP, service: SeriesService) -> None:
             use_cache=use_cache,
             max_rows=max_rows,
             series_names=series_names,
+            resample=resample,
+            agg=agg,
+            transform=transform,
         )
 
     @mcp.tool(annotations={"readOnlyHint": True, "openWorldHint": True})
@@ -187,7 +219,7 @@ def register_tools(mcp: FastMCP, service: SeriesService) -> None:
             Field(description="Reuse cached parquet data (default) or force a refresh."),
         ] = True,
     ) -> dict[str, Any]:
-        """Compact summary of each series (last value, min, max, mean, change) without the raw rows.
+        """Compact summary of each series (last/prev/YoY values, min/max with dates, mean, median, std) without the raw rows.
 
         Use this when you need the numbers for a narrative answer and do not need
         the full observation history.
@@ -197,6 +229,105 @@ def register_tools(mcp: FastMCP, service: SeriesService) -> None:
             first_date=parse_date(first_date),
             last_date=parse_date(last_date),
             use_cache=use_cache,
+        )
+
+    @mcp.tool(annotations={"readOnlyHint": True, "openWorldHint": True})
+    async def get_macro_snapshot(
+        preset: Annotated[
+            Literal["overview", "inflation", "rates_and_fx", "activity", "fiscal", "external"],
+            Field(
+                description=(
+                    "Curated Brazilian macro bundle: 'overview' (default), 'inflation', "
+                    "'rates_and_fx', 'activity', 'fiscal', or 'external'."
+                )
+            ),
+        ] = "overview",
+        years: Annotated[
+            int,
+            Field(
+                description="Lookback window in years for summary statistics (1..30).", ge=1, le=30
+            ),
+        ] = 2,
+        use_cache: Annotated[
+            bool,
+            Field(description="Reuse cached parquet data (default) or force a refresh."),
+        ] = True,
+    ) -> dict[str, Any]:
+        """Fetch a one-call Brazilian macro dashboard for a curated preset of headline SGS series."""
+        return await service.get_macro_snapshot(preset, years=years, use_cache=use_cache)
+
+    @mcp.tool(annotations={"readOnlyHint": True, "openWorldHint": True})
+    async def get_focus_expectations(
+        indicator: Annotated[
+            str,
+            Field(
+                description=(
+                    "Macro indicator name or alias (English/Portuguese), e.g. 'IPCA', 'Selic', "
+                    "'PIB Total' (or 'gdp'), 'Câmbio' (or 'fx'/'usd'), 'IGP-M', 'unemployment', "
+                    "'gross debt', 'primary result'."
+                )
+            ),
+        ] = "IPCA",
+        horizon: Annotated[
+            Literal["annual", "monthly", "quarterly", "inflation_12m", "selic_meetings"],
+            Field(
+                description=(
+                    "Forecast horizon: 'annual' (default, calendar years), 'monthly', 'quarterly', "
+                    "'inflation_12m' (next 12 months), or 'selic_meetings' (Copom meetings)."
+                )
+            ),
+        ] = "annual",
+        first_date: Annotated[
+            str | None,
+            Field(
+                description=(
+                    "Start survey date (YYYY-MM-DD or DD/MM/YYYY). Defaults to 90 days before last_date."
+                )
+            ),
+        ] = None,
+        last_date: Annotated[
+            str | None,
+            Field(description="End survey date (YYYY-MM-DD or DD/MM/YYYY). Defaults to today."),
+        ] = None,
+        reference_period: Annotated[
+            str | None,
+            Field(
+                description=(
+                    "Optional target period filter: e.g. '2026' (annual), '12/2026' (monthly), "
+                    "'4/2026' (quarterly), or 'R1/2027' (selic_meetings)."
+                )
+            ),
+        ] = None,
+        base_calculo: Annotated[
+            Literal[0, 1],
+            Field(
+                description=(
+                    "Focus calculation base: 0 (default, last 30 days / official Focus) or "
+                    "1 (last 5 business days)."
+                )
+            ),
+        ] = 0,
+        smoothed: Annotated[
+            bool,
+            Field(
+                description="For horizon='inflation_12m': return smoothed expectations (default True)."
+            ),
+        ] = True,
+        max_rows: Annotated[
+            int,
+            Field(description="Maximum survey rows to return (1..5000).", ge=1, le=5000),
+        ] = 200,
+    ) -> dict[str, Any]:
+        """Fetch Boletim Focus market expectations (median, mean, min, max, respondents) from BCB Olinda."""
+        return await service.get_focus_expectations(
+            indicator,
+            horizon=horizon,
+            first_date=parse_date(first_date),
+            last_date=parse_date(last_date),
+            reference_period=reference_period,
+            base_calculo=base_calculo,
+            smoothed=smoothed,
+            max_rows=max_rows,
         )
 
     @mcp.tool(annotations={"readOnlyHint": True, "openWorldHint": False})

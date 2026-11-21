@@ -187,3 +187,55 @@ async def test_search_catalog_parses_pages() -> None:
     finally:
         await client.close()
     assert [row["id"] for row in rows] == [11, 432]
+
+
+@respx.mock
+async def test_fetch_focus_expectations_encodes_odata_with_percent20() -> None:
+    route = respx.get(
+        url__regex=r"https://olinda\.bcb\.gov\.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativasMercadoAnuais.*"
+    ).mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "value": [
+                    {
+                        "Indicador": "IPCA",
+                        "Data": "2026-11-13",
+                        "DataReferencia": "2026",
+                        "Media": 4.5,
+                        "Mediana": 4.45,
+                        "DesvioPadrao": 0.2,
+                        "Minimo": 4.0,
+                        "Maximo": 5.1,
+                        "numeroRespondentes": 120,
+                        "baseCalculo": 0,
+                    }
+                ]
+            },
+        )
+    )
+    client = BCBClient(min_interval=0)
+    try:
+        rows = await client.fetch_focus_expectations(
+            horizon="annual",
+            indicator="IPCA",
+            first_date=dt.date(2026, 11, 1),
+            reference_period="2026",
+        )
+    finally:
+        await client.close()
+
+    assert len(rows) == 1
+    assert rows[0]["Mediana"] == 4.45
+    sent_url = str(route.calls[0].request.url)
+    assert "Data%20desc" in sent_url
+    assert "+" not in sent_url
+
+
+async def test_fetch_focus_expectations_rejects_unknown_horizon() -> None:
+    client = BCBClient(min_interval=0)
+    try:
+        with pytest.raises(ValueError, match="Unknown Focus horizon"):
+            await client.fetch_focus_expectations(horizon="weekly")
+    finally:
+        await client.close()

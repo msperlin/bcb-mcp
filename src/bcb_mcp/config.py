@@ -3,16 +3,21 @@
 from __future__ import annotations
 
 import os
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
 APP_NAME = "bcb-mcp"
 PACKAGE_NAME = "bcb_mcp"
-__version__ = "0.1.1"
+try:
+    __version__ = version(APP_NAME)
+except PackageNotFoundError:  # pragma: no cover - editable / uninstalled tree
+    __version__ = "0.2.0"
 
-# --- BCB SGS endpoints -------------------------------------------------------
+# --- BCB SGS & Olinda endpoints ----------------------------------------------
 SGS_DATA_URL = "https://api.bcb.gov.br/dados/serie/bcdata.sgs.{series_id}/dados"
 SGS_SEARCH_URL = "https://www3.bcb.gov.br/sgspub/localizarseries/localizarSeries.do"
 SGS_SEARCH_HOME = "https://www3.bcb.gov.br/sgspub/"
+OLINDA_EXPECTATIVAS_URL = "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata"
 USER_AGENT = f"{APP_NAME}/{__version__} (+https://github.com/msperlin/bcb-mcp)"
 
 # --- HTTP behaviour ----------------------------------------------------------

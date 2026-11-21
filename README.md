@@ -76,8 +76,10 @@ asyncio.run(main())
 | `list_categories` | Dictionary categories with descriptions and example ids. |
 | `list_series` | Browse the dictionary, optionally by category. |
 | `describe_series` | Name, unit, frequency, source, description, aliases and cache state for given ids. |
-| `get_series` | Download observations. Long/wide, chunked, cached, per-series failure reporting. |
-| `get_series_stats` | Compact summary (last value, mean, min, max, change) without the raw rows. |
+| `get_series` | Download observations. Long/wide, chunked, cached, optional resampling (`monthly`/`quarterly`/`annual`) & transforms (`diff`/`pct_change`/`yoy`/`acc12m`/`index100`), per-series failure reporting. |
+| `get_series_stats` | Compact summary (last/prev/YoY values, min/max with dates, mean, median, std, change) without the raw rows. |
+| `get_macro_snapshot` | One-call Brazilian macro dashboard for curated presets (`overview`, `inflation`, `rates_and_fx`, `activity`, `fiscal`, `external`). |
+| `get_focus_expectations` | Boletim Focus market expectations (median, mean, min, max, respondents) from BCB Olinda OData (`annual`, `monthly`, `quarterly`, `inflation_12m`, `selic_meetings`). |
 | `query_cache` | Read-only DuckDB SQL over all cached parquet files. |
 | `cache_status` | What is cached: series, coverage ranges, rows, disk usage. |
 | `clear_cache` | Evict selected series or the whole cache. |

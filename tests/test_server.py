@@ -27,6 +27,8 @@ async def test_tools_are_registered(server) -> None:
         "describe_series",
         "get_series",
         "get_series_stats",
+        "get_macro_snapshot",
+        "get_focus_expectations",
         "query_cache",
         "cache_status",
         "clear_cache",
